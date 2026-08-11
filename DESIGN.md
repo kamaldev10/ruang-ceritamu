@@ -25,7 +25,7 @@
 | Frontend | Jinja2 templates, Tailwind CSS (CDN), Material Symbols |
 | Fonts | Be Vietnam Pro (heading), Inter (body) |
 | Animation | AOS (Animate On Scroll) di landing page |
-| Chat | HTTP polling 2.5 detik (bukan WebSocket) |
+| Chat | WebSocket (Flask-SocketIO + gevent), polling 15 detik sbg fallback |
 | Production | Gunicorn (Linux) / Waitress (Windows) via wsgi.py |
 
 ### 1.2 File Count & Structure
@@ -419,8 +419,9 @@ User                          System                        Psikolog
 
 ### 6.4 Tampilan Chat — Konsep WhatsApp (2026-08-05)
 
-UI ruang chat (`chat/room.html`) mengadopsi pola interaksi ala WhatsApp di atas
-mekanisme polling yang sama (bukan WebSocket — itu masih roadmap terpisah, lihat §16):
+UI ruang chat (`chat/room.html`) mengadopsi pola interaksi ala WhatsApp. Ditulis
+awalnya di atas mekanisme polling; sejak §6.5 (2026-08-11) transport utamanya
+sudah WebSocket, tapi konsep UI di bawah ini tidak berubah:
 
 - **Header**: avatar bulat + label anonim ("Pendengar" untuk user, "Curhat #KODE"
   untuk psikolog) + baris status (`Online` / `Menunggu pendengar…` / `Mengetik…` /
@@ -438,6 +439,65 @@ mekanisme polling yang sama (bukan WebSocket — itu masih roadmap terpisah, lih
   sudah punya field `image` dan backend sudah menyimpannya, tapi **UI tidak pernah
   menampilkan input file maupun bubble gambar sama sekali** (gap tersembunyi, baru
   ketahuan & diperbaiki di sesi ini).
+
+### 6.5 Transport Real-time — WebSocket (2026-08-11)
+
+Chat sebelumnya polling HTTP tiap 2.5 detik untuk semua update (pesan baru,
+status, mengetik, read receipt). Sekarang push lewat WebSocket
+(Flask-SocketIO + gevent) — polling tetap ada tapi cuma jaring pengaman
+lambat (15 detik) kalau koneksi socket putus.
+
+**Arsitektur — hybrid, bukan full rewrite:**
+- Aksi yang butuh CSRF/upload file/audit log/deteksi krisis (kirim pesan,
+  akhiri sesi) **tetap lewat route REST biasa** di `app/routes/chat.py` —
+  tidak dipindah ke socket, supaya semua proteksi yang sudah ada (CSRF,
+  validasi ukuran gambar, `check_crisis()`, `log_audit()`) tidak perlu ditulis
+  ulang untuk jalur socket.
+- Setelah route REST commit ke DB, ia **juga** `socketio.emit(...)` ke room
+  (nama room = `session_code`) supaya pihak lain dapat update instan tanpa
+  nunggu poll berikutnya.
+- Event dari client ke server (`join`, `typing`, `mark_read`) di-handle di
+  `app/sockets.py` — dipakai untuk hal yang murni real-time/tidak butuh
+  proteksi CSRF (typing indicator, tandai-sudah-baca).
+
+**Event Socket.IO:**
+
+| Event | Arah | Payload | Dipicu oleh |
+|---|---|---|---|
+| `join` | client→server | `{code}` | Saat koneksi socket dibuka / reconnect |
+| `typing` | client→server | `{code}` | User mengetik (throttle 2 detik) |
+| `mark_read` | client→server | `{code}` | Pesan baru dari lawan bicara masuk ke layar |
+| `new_message` | server→room | pesan (sama shape dgn REST) | `POST /send` berhasil |
+| `status_change` | server→room | `{status}` | Psikolog terima sesi / sesi diakhiri |
+| `typing` | server→room (kecuali pengirim) | `{role}` | Relay dari client `typing` |
+| `read_receipt` | server→room | `{read_up_to}` | Relay dari client `mark_read` |
+
+**Dedup di client:** karena `new_message` di-broadcast ke SELURUH room
+(termasuk pengirim sendiri — `socketio.emit` dari route REST bukan dari
+socket handler, jadi tidak ada "current socket" buat `include_self=False`),
+`room.html` melacak `renderedIds` (Set) supaya pesan yang sudah dirender dari
+response AJAX `/send` tidak dirender dobel saat broadcast socket-nya nyampe.
+
+**Gevent monkey-patch:** wajib jadi baris PALING AWAL di `run.py`/`wsgi.py`
+(sebelum import lain, termasuk `db.py`/PyMySQL) — kalau tidak, cooperative
+concurrency gevent tidak berlaku benar buat driver DB & socket standard
+library. Lihat komentar di kedua file.
+
+**⚠️ Catatan deployment production:** Waitress (server Windows yang
+didokumentasikan di §1.1/AGENTS.md) **tidak support WebSocket sama sekali**.
+Kalau dijalankan lewat waitress, chat tetap jalan (Socket.IO client otomatis
+fallback ke long-polling — sudah dikonfigurasi `transports:["websocket","polling"]`
+di `room.html`), tapi tidak dapat manfaat penuh WebSocket. Untuk WebSocket
+sungguhan di production:
+- **Linux**: `gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 -b 0.0.0.0:8000 wsgi:app`
+- **Windows**: jalankan lewat `python run.py` (pakai gevent's built-in
+  production-capable WSGI server), bukan `waitress-serve`.
+
+Divalidasi end-to-end lewat client `python-socketio` sungguhan (bukan cuma
+HTTP) dengan `transports=["websocket"]` dipaksa (tidak fallback polling) —
+login dua sisi, buka sesi (status_change diterima instan), kirim pesan
+(new_message instan ke kedua sisi), typing indicator, mark_read (read_receipt
+instan), akhiri sesi (status_change instan). Semua 8 tahap lolos.
 
 ---
 
@@ -808,10 +868,13 @@ Database-level audit via model `AuditLog`. Setiap aksi penting memanggil `log_au
 > Email verification saat register sempat diimplementasikan di tanggal yang sama,
 > lalu **dihapus lagi** atas permintaan user — register sekarang langsung
 > auto-login seperti semula, tidak ada gate verifikasi di `login()`.
+>
+> **Update 2026-08-11:** WebSocket real-time chat sudah diimplementasikan
+> (Flask-SocketIO + gevent). Lihat §6.5 untuk detail arsitektur & catatan
+> deployment production (waitress di Windows tidak support WebSocket).
 
 | Prioritas | Fitur | Dependency |
 |-----------|-------|------------|
-| High | WebSocket real-time chat | Flask-SocketIO + eventlet/gevent |
 | Medium | Database backup otomatis | Cron job + mysqldump |
 | Medium | Sentry error tracking | Sentry account (free tier) |
 | Medium | Upload dokumen verifikasi psikolog | File storage + review workflow |

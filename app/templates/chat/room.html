@@ -117,6 +117,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
 <script>
 const CODE="{{ sess.session_code }}",ROLE="{{ 'user' if current_user.is_user else ('psikolog' if current_user.is_psikolog else 'admin') }}",CSRF="{{ csrf_token() }}";
 const msgs=document.getElementById("messages"),stxt=document.getElementById("status-text-inner"),sdot=document.getElementById("status-dot"),
@@ -124,7 +125,8 @@ const msgs=document.getElementById("messages"),stxt=document.getElementById("sta
       attachBtn=document.getElementById("attach-btn"),imgInput=document.getElementById("image-input"),
       imgPreviewWrap=document.getElementById("image-preview-wrap"),imgPreview=document.getElementById("image-preview"),imgRemove=document.getElementById("image-remove");
 let lastId=0,lastDateLabel=null;
-document.querySelectorAll("[data-msg-id]").forEach(e=>{const i=+e.dataset.msgId;if(i>lastId)lastId=i});
+const renderedIds=new Set();
+document.querySelectorAll("[data-msg-id]").forEach(e=>{const i=+e.dataset.msgId;renderedIds.add(i);if(i>lastId)lastId=i});
 {% if messages %}lastDateLabel="{{ day_label(messages[-1].sent_at) }}";{% endif %}
 function scroll(){msgs.scrollTop=msgs.scrollHeight}scroll();
 function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
@@ -136,6 +138,8 @@ function maybeDateDivider(dateLabel){
   }
 }
 function render(m){
+  if(renderedIds.has(m.id))return;
+  renderedIds.add(m.id);
   maybeDateDivider(m.date_label);
   const self=m.sender_role===ROLE||ROLE==='admin',w=document.createElement("div");
   w.className=`flex items-end gap-2 max-w-[85%] mt-1.5 ${self?'self-end flex-row-reverse':'self-start'}`;w.dataset.msgId=m.id;
@@ -148,7 +152,9 @@ function render(m){
         tick=self?`<span class="material-symbols-outlined tick ${m.is_read?'read':''}">${m.is_read?'done_all':'done'}</span>`:'';
   w.innerHTML=`<div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${ab}"><span class="material-symbols-outlined text-[16px]">${ic}</span></div><div class="p-2.5 rounded-2xl ${bb}${cr} shadow-sm">${img}${cap}<span class="flex items-center justify-end gap-1 text-[10px] ${tc} mt-1">${m.sent_at}${tick}</span></div>`;
   msgs.appendChild(w);scroll();
+  if(m.id>lastId)lastId=m.id;
   if(m.is_crisis&&cb)cb.classList.remove('hidden');
+  if(m.sender_role!==ROLE&&socket&&socket.connected)socket.emit("mark_read",{code:CODE});
 }
 function updateReadTicks(readUpTo){
   document.querySelectorAll("[data-msg-id]").forEach(el=>{
@@ -157,29 +163,50 @@ function updateReadTicks(readUpTo){
     if(id<=readUpTo&&!t.classList.contains('read')){t.classList.add('read');t.textContent='done_all'}
   });
 }
+function setStatus(status){
+  if(status==="active"){sdot.className="w-2 h-2 rounded-full bg-green-400";stxt.textContent="Online";if(wb)wb.remove()}
+  else if(status==="ended"){stxt.textContent="Sesi berakhir";sdot.className="w-2 h-2 rounded-full bg-gray-300";if(mf)mf.style.display="none"}
+}
+let typingHideTimer=null;
+function showTyping(){
+  stxt.textContent="Mengetik…";sdot.className="w-2 h-2 rounded-full bg-green-400 animate-pulse";
+  clearTimeout(typingHideTimer);
+  typingHideTimer=setTimeout(()=>{if("{{ sess.status }}"==="active"||sdot.className.includes("green"))setStatus("active")},3000);
+}
+
+// ─── Socket.IO: transport utama (real-time push) ──────────────────────
+let socket=null;
+if(window.io){
+  socket=io({transports:["websocket","polling"]});
+  socket.on("connect",()=>socket.emit("join",{code:CODE}));
+  socket.on("reconnect",()=>socket.emit("join",{code:CODE}));
+  socket.on("new_message",m=>render(m));
+  socket.on("read_receipt",d=>updateReadTicks(d.read_up_to||0));
+  socket.on("typing",()=>showTyping());
+  socket.on("status_change",d=>setStatus(d.status));
+}
+
+// ─── Polling: fallback lambat kalau socket putus/gagal konek ──────────
 async function poll(){
   try{
     const r=await fetch(`/curhat/${CODE}/messages?after_id=${lastId}`);if(!r.ok)return;const d=await r.json();
-    d.messages.forEach(m=>{render(m);if(m.id>lastId)lastId=m.id});
+    d.messages.forEach(m=>render(m));
     updateReadTicks(d.read_up_to||0);
-    if(d.status==="active"){sdot.className="w-2 h-2 rounded-full bg-green-400";if(wb)wb.remove()}
-    else if(d.status==="ended"){stxt.textContent="Sesi berakhir";sdot.className="w-2 h-2 rounded-full bg-gray-300";if(mf)mf.style.display="none"}
-    if(d.status!=="ended"){
-      if(d.other_typing){stxt.textContent="Mengetik…";sdot.className="w-2 h-2 rounded-full bg-green-400 animate-pulse"}
-      else if(d.status==="active"){stxt.textContent="Online";sdot.className="w-2 h-2 rounded-full bg-green-400"}
-    }
+    setStatus(d.status);
+    if(d.status!=="ended"&&d.other_typing)showTyping();
     if(d.has_crisis&&cb)cb.classList.remove('hidden');
   }catch(e){console.warn(e)}
 }
-if("{{ sess.status }}"!=="ended")setInterval(poll,2500);
+if("{{ sess.status }}"!=="ended")setInterval(poll,(socket?15000:2500));
 
-// Typing ping (throttled — kirim maksimal sekali tiap beberapa detik saat aktif mengetik)
+// Typing indicator — lewat socket kalau konek, throttled biar tidak spam
 let lastTypingPing=0;
 mi&&mi.addEventListener("input",()=>{
   const now=Date.now();
   if(now-lastTypingPing>2000){
     lastTypingPing=now;
-    fetch(`/curhat/${CODE}/typing`,{method:"POST",headers:{"X-CSRFToken":CSRF}}).catch(()=>{});
+    if(socket&&socket.connected)socket.emit("typing",{code:CODE});
+    else fetch(`/curhat/${CODE}/typing`,{method:"POST",headers:{"X-CSRFToken":CSRF}}).catch(()=>{});
   }
 });
 
@@ -204,7 +231,7 @@ if(mf)mf.addEventListener("submit",async e=>{
     const fd=new FormData();fd.append("content",c);fd.append("csrf_token",CSRF);
     if(pendingImageFile)fd.append("image",pendingImageFile);
     const r=await fetch(`/curhat/${CODE}/send`,{method:"POST",body:fd});
-    if(r.ok){const m=await r.json();render(m);if(m.id>lastId)lastId=m.id}
+    if(r.ok){const m=await r.json();render(m)}
     pendingImageFile=null;imgInput.value="";imgPreviewWrap.classList.add("hidden");
   }finally{mi.disabled=false;mi.focus()}
 });

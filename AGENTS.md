@@ -31,7 +31,14 @@
 - **Crisis Detection:** Logic in `app/utils.py` monitors for 30+ keywords and triggers admin notifications.
 - **Authentication:** Combined login/register routes in `app/routes/auth.py`.
 - **Testing:** No specialized test suite found in root. Use `TestingConfig` in `config.py` for manual test scripts.
-- **Production:** Uses `waitress` (Windows) or `gunicorn` (Linux).
+- **Real-time chat:** Flask-SocketIO + gevent (see DESIGN.md §6.5). `run.py`/`wsgi.py`
+  both start with `from gevent import monkey; monkey.patch_all()` — this MUST stay
+  the very first thing executed, before any other import. Dev server uses
+  `socketio.run(app, ...)`, not `app.run(...)`.
+- **Production:** `gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker`
+  (Linux) or `python run.py` (Windows, gevent's own server) for real WebSocket.
+  Plain `waitress-serve` still works but silently falls back to Socket.IO
+  long-polling — no WebSocket support in waitress itself.
 
 ## Conventions
 - **Styling:** Tailwind CSS is likely used (verify in templates).

@@ -5,7 +5,7 @@ from logging.handlers import RotatingFileHandler
 
 from flask import Flask, render_template
 from config import config_map, Config
-from app.extensions import db, login_manager, csrf, migrate, limiter, mail
+from app.extensions import db, login_manager, csrf, migrate, limiter, mail, socketio
 
 
 def create_app(config_name=None):
@@ -20,10 +20,13 @@ def create_app(config_name=None):
     migrate.init_app(app, db)
     limiter.init_app(app)
     mail.init_app(app)
+    async_mode = "threading" if app.config.get("TESTING") else "gevent"
+    socketio.init_app(app, async_mode=async_mode, cors_allowed_origins="*")
 
     _setup_logging(app)
 
     from app.models import User
+    from app import sockets  # noqa: F401 — registrasi event handler SocketIO
 
     @login_manager.user_loader
     def load_user(user_id):

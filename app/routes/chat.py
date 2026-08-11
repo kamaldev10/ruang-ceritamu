@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, abort
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from app.extensions import db
+from app.extensions import db, socketio
 from app.models import ChatSession, Message, SessionStatus
 from app.forms import StartCurhatForm, MessageForm
 from app.utils import (role_required, generate_session_code, check_crisis,
@@ -61,6 +61,7 @@ def room(code):
         sess.status = SessionStatus.ACTIVE.value
         sess.accepted_at = datetime.utcnow()
         db.session.commit()
+        socketio.emit("status_change", {"status": sess.status}, room=code)
     elif current_user.is_psikolog and sess.psikolog_id and sess.psikolog_id != current_user.id:
         abort(403)
     form = MessageForm()
@@ -165,10 +166,12 @@ def send_message(code):
     if is_crisis:
         flag_crisis_session(sess)
 
+    status_changed = False
     if sess.status == SessionStatus.WAITING.value and current_user.is_psikolog:
         sess.status = SessionStatus.ACTIVE.value
         sess.psikolog_id = current_user.id
         sess.accepted_at = datetime.utcnow()
+        status_changed = True
 
     # Pesan baru keluar = tanda "sedang mengetik" milikku sendiri sudah tidak relevan lagi.
     if current_user.is_user:
@@ -177,10 +180,15 @@ def send_message(code):
         sess.psikolog_typing_until = None
 
     db.session.commit()
-    return jsonify({"id": msg.id, "sender_role": role, "content": msg.content,
-                    "sent_at": msg.sent_at.strftime("%H:%M"), "date_label": day_label(msg.sent_at),
-                    "is_crisis": is_crisis, "is_read": False,
-                    "image": f"/static/chat_uploads/{image_filename}" if image_filename else None})
+
+    payload = {"id": msg.id, "sender_role": role, "content": msg.content,
+               "sent_at": msg.sent_at.strftime("%H:%M"), "date_label": day_label(msg.sent_at),
+               "is_crisis": is_crisis, "is_read": False,
+               "image": f"/static/chat_uploads/{image_filename}" if image_filename else None}
+    socketio.emit("new_message", payload, room=code)
+    if status_changed:
+        socketio.emit("status_change", {"status": sess.status}, room=code)
+    return jsonify(payload)
 
 
 @chat_bp.route("/<code>/end", methods=["POST"])
@@ -201,6 +209,7 @@ def end_session(code):
                           f"Pendengar mengakhiri sesi #{sess.session_code}.", notif_type="session")
 
     db.session.commit()
+    socketio.emit("status_change", {"status": sess.status}, room=code)
     flash("Sesi berakhir. Terima kasih.", "info")
     if current_user.is_psikolog:
         return redirect(url_for("psikolog.dashboard"))
