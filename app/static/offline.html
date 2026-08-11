@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tidak Ada Koneksi — CeritaKita</title>
+  <style>
+    body { margin:0; min-height:100vh; display:flex; align-items:center; justify-content:center;
+           background:#F9F9F8; font-family:Inter,system-ui,sans-serif; color:#1A1C1C; text-align:center; padding:24px; }
+    .card { max-width:360px; }
+    .icon { width:72px; height:72px; border-radius:20px; background:#0A3622; display:flex; align-items:center;
+            justify-content:center; margin:0 auto 20px; }
+    .icon span { font-size:32px; }
+    h1 { font-size:20px; margin:0 0 8px; color:#0A3622; }
+    p { font-size:14px; color:#444945; line-height:1.5; margin:0 0 20px; }
+    button { background:#0A3622; color:#fff; border:none; padding:12px 24px; border-radius:999px;
+             font-weight:700; font-size:14px; cursor:pointer; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon"><span>💚</span></div>
+    <h1>Kamu sedang offline</h1>
+    <p>Halaman ini butuh koneksi internet. Cek jaringanmu lalu coba lagi.</p>
+    <button onclick="location.reload()">Coba Lagi</button>
+  </div>
+</body>
+</html>
