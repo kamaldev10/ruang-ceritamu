@@ -1,6 +1,14 @@
 {% extends "base_dashboard.html" %}
 {% block page_title %}Mulai Curhat{% endblock %}
 {% block page_subtitle %}Pilih cara ternyamanmu{% endblock %}
+{% block head_extra %}
+<style>
+  /* Select-nya pakai text-white supaya kebaca di atas background gelap saat
+     tertutup, tapi dropdown popup-nya sendiri dirender browser dengan
+     background putih — tanpa ini teksnya ikut putih di atas putih. */
+  #topic-select option { color: #1A1C1C; background: #fff; }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -12,7 +20,7 @@
       <p class="text-white/70 text-sm mb-6">Pendengar dipilihkan acak oleh sistem. Saling anonim sepenuhnya.</p>
       <form method="POST" action="{{ url_for('chat.start') }}" class="space-y-4">
         {{ form.hidden_tag() }}
-        <div><label class="block text-xs font-bold text-accent mb-1.5">Topik (opsional)</label>{{ form.topic(class_="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:border-accent") }}</div>
+        <div><label class="block text-xs font-bold text-accent mb-1.5">Topik (opsional)</label>{{ form.topic(id="topic-select", class_="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:border-accent") }}</div>
         <button type="submit" class="w-full bg-accent text-primary py-3.5 rounded-full font-bold text-sm hover:scale-105 transition-transform">Cari Pendengar</button>
       </form>
     </div>
