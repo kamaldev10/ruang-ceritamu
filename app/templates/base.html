@@ -12,26 +12,13 @@
   <style>
     body{background:#F9F9F8;font-family:'Inter',sans-serif}
     .ambient-shadow{box-shadow:0 10px 30px rgba(0,0,0,.05)}
-    .flash-success{background:#DCFCE7;color:#166534;border-color:#BBF7D0}
-    .flash-error{background:#FEE2E2;color:#991B1B;border-color:#FECACA}
-    .flash-info{background:#DBEAFE;color:#1E40AF;border-color:#BFDBFE}
   </style>
   {% block head_extra %}{% endblock %}
 </head>
 <body class="{% block body_class %}text-on-surface bg-surface{% endblock %}">
   {% block body_content %}
   {% include "components/_navbar.html" %}
-  {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}
-  <div class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-4 space-y-2">
-    {% for cat, msg in messages %}
-    <div class="flash-{{ cat }} border px-4 py-3 rounded-xl text-sm font-medium ambient-shadow flex items-start gap-3">
-      <span class="flex-1">{{ msg }}</span>
-      <button onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" class="opacity-50 hover:opacity-100"><span class="material-symbols-outlined text-[16px]">close</span></button>
-    </div>
-    {% endfor %}
-  </div>
-  <script>setTimeout(()=>{document.querySelectorAll('[class*="flash-"]').forEach(e=>{e.style.transition="opacity .5s";e.style.opacity="0";setTimeout(()=>e.remove(),500)})},5000)</script>
-  {% endif %}{% endwith %}
+  {% include "components/_toast.html" %}
   <main class="min-h-screen">{% block content %}{% endblock %}</main>
   {% include "components/_footer.html" %}
   {% endblock %}

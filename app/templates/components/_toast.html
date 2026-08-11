@@ -1,0 +1,37 @@
+<!-- Notifikasi flash terpusat — satu tampilan dipakai base.html, base_dashboard.html,
+     dan auth.html. Ubah gaya toast DI SINI SAJA, jangan duplikasi ke tempat lain. -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div id="toast-container" class="fixed top-20 right-4 lg:right-6 z-[100] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+  {% for cat, msg in messages %}
+  <div class="toast-enter pointer-events-auto bg-white rounded-xl shadow-float border border-slate-100 p-4 flex items-start gap-3 relative overflow-hidden">
+    <div class="absolute left-0 top-0 bottom-0 w-1 {{ 'bg-green-500' if cat == 'success' else ('bg-red-500' if cat == 'error' else 'bg-blue-500') }}"></div>
+    <span class="material-symbols-outlined mt-0.5 {{ 'text-green-500' if cat == 'success' else ('text-red-500' if cat == 'error' else 'text-blue-500') }}">
+      {{ 'check_circle' if cat == 'success' else ('error' if cat == 'error' else 'info') }}
+    </span>
+    <div class="flex-1">
+      <p class="text-sm font-semibold text-slate-800">{{ 'Berhasil' if cat == 'success' else ('Perlu Diperhatikan' if cat == 'error' else 'Info') }}</p>
+      <p class="text-sm text-slate-500 mt-0.5 leading-snug">{{ msg }}</p>
+    </div>
+    <button onclick="this.closest('.toast-enter').remove()" aria-label="Tutup notifikasi" class="text-slate-400 hover:text-slate-600 transition-colors">
+      <span class="material-symbols-outlined text-[18px]">close</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+<style>
+  .toast-enter { animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+</style>
+<script>
+  setTimeout(() => {
+    document.querySelectorAll('.toast-enter').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateX(10px)';
+      el.style.transition = 'all 0.3s ease';
+      setTimeout(() => el.remove(), 300);
+    });
+  }, 5000);
+</script>
+{% endif %}
+{% endwith %}

@@ -205,17 +205,7 @@
   </section>
 
 <!-- Flash messages overlay -->
-{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}
-<div class="fixed top-6 left-1/2 -translate-x-1/2 z-[200] w-full max-w-md px-4 space-y-2">
-  {% for cat, msg in messages %}
-  <div class="flash-{{ cat }} border px-4 py-3 rounded-xl text-sm font-medium ambient-shadow flex items-start gap-3">
-    <span class="flex-1">{{ msg }}</span>
-    <button onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" class="opacity-50 hover:opacity-100"><span class="material-symbols-outlined text-[16px]">close</span></button>
-  </div>
-  {% endfor %}
-</div>
-<script>setTimeout(()=>{document.querySelectorAll('[class*="flash-"]').forEach(e=>{e.style.transition="opacity .5s";e.style.opacity="0";setTimeout(()=>e.remove(),500)})},5000)</script>
-{% endif %}{% endwith %}
+{% include "components/_toast.html" %}
 
 <script>
 function switchTab(tabName) {
