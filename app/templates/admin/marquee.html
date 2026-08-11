@@ -1,0 +1,111 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Marquee Landing Page{% endblock %}
+{% block page_subtitle %}Kelola teks berjalan di landing page{% endblock %}
+
+{% block content %}
+<!-- Add New Item -->
+<div class="bg-white p-6 rounded-2xl shadow-soft border border-slate-100 mb-6">
+  <h2 class="font-heading font-bold text-slate-800 mb-4">Tambah Item Baru</h2>
+  <form method="POST" action="{{ url_for('admin.marquee') }}" class="flex flex-col md:flex-row gap-4 md:items-end">
+    {{ form.hidden_tag() }}
+    <div class="flex-1">
+      <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.label.label.text }}</label>
+      {{ form.label(class_="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all", placeholder="Misal: Konseling Anonim") }}
+      {% for e in form.label.errors %}<p class="text-error text-xs mt-1">{{ e }}</p>{% endfor %}
+    </div>
+    <div class="w-full md:w-56">
+      <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.icon.label.text }}</label>
+      {{ form.icon(class_="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all", placeholder="emergency_home") }}
+      <p class="text-[11px] text-slate-400 mt-1">Nama ikon dari <a href="https://fonts.google.com/icons" target="_blank" class="underline">Material Symbols</a>.</p>
+    </div>
+    <div class="w-full md:w-32">
+      <label class="block text-xs font-semibold text-slate-500 mb-1">{{ form.display_order.label.text }}</label>
+      {{ form.display_order(class_="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all") }}
+    </div>
+    {{ form.submit(class_="shrink-0 bg-accent hover:bg-accent-hover text-brand-900 px-6 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm hover:shadow-md cursor-pointer") }}
+  </form>
+</div>
+
+<!-- Data Table -->
+<div class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-soft">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm enterprise-table">
+      <thead>
+        <tr>
+          <th class="px-6 py-4 text-left">Preview</th>
+          <th class="px-6 py-4 text-left">Teks</th>
+          <th class="px-6 py-4 text-left">Ikon</th>
+          <th class="px-6 py-4 text-center">Urutan</th>
+          <th class="px-6 py-4 text-center">Status</th>
+          <th class="px-6 py-4 text-center">Simpan</th>
+          <th class="px-6 py-4 text-right">Aksi</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        {% for item in items %}
+        <tr class="group transition-colors">
+          <form method="POST" action="{{ url_for('admin.update_marquee', item_id=item.id) }}" class="contents">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <td class="px-6 py-4">
+            <div class="inline-flex items-center gap-2 bg-brand-900 text-white px-3 py-1.5 rounded-full text-xs font-bold">
+              {{ item.label }} <span class="material-symbols-outlined text-accent text-[16px]">{{ item.icon }}</span>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <input type="text" name="label" value="{{ item.label }}" required
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:bg-white focus:border-brand-500 outline-none transition-all">
+          </td>
+          <td class="px-6 py-4">
+            <input type="text" name="icon" value="{{ item.icon }}"
+                   class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:bg-white focus:border-brand-500 outline-none transition-all">
+          </td>
+          <td class="px-6 py-4 text-center">
+            <input type="number" name="display_order" value="{{ item.display_order }}" min="0"
+                   class="w-16 px-2 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 text-center focus:bg-white focus:border-brand-500 outline-none transition-all">
+          </td>
+          <td class="px-6 py-4 text-center">
+            <span class="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-lg {{ 'text-green-700 bg-green-50 border border-green-200' if item.is_active else 'text-slate-500 bg-slate-100 border border-slate-200' }}">
+              {{ 'Aktif' if item.is_active else 'Nonaktif' }}
+            </span>
+          </td>
+          <td class="px-6 py-4 text-center">
+            <button type="submit" title="Simpan" class="w-8 h-8 rounded-lg inline-flex items-center justify-center bg-brand-50 text-brand-700 hover:bg-brand-100 border border-brand-200 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">save</span>
+            </button>
+          </td>
+          </form>
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <form method="POST" action="{{ url_for('admin.toggle_marquee', item_id=item.id) }}" class="inline-block">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" title="{{ 'Nonaktifkan' if item.is_active else 'Aktifkan' }}" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors {{ 'bg-yellow-50 text-yellow-600 hover:bg-yellow-100 border border-yellow-200' if item.is_active else 'bg-green-50 text-green-600 hover:bg-green-100 border border-green-200' }}">
+                  <span class="material-symbols-outlined text-[18px]">{{ 'visibility_off' if item.is_active else 'visibility' }}</span>
+                </button>
+              </form>
+              <form method="POST" action="{{ url_for('admin.delete_marquee', item_id=item.id) }}" class="inline-block" onsubmit="return confirm('Hapus item ini?');">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" title="Hapus" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors">
+                  <span class="material-symbols-outlined text-[18px]">delete</span>
+                </button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7">
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                <span class="material-symbols-outlined text-3xl">directions_run</span>
+              </div>
+              <p class="text-slate-600 font-semibold mb-1">Belum ada item marquee</p>
+              <p class="text-slate-400 text-sm">Tambahkan item baru lewat form di atas.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

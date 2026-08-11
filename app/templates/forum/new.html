@@ -1,0 +1,13 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Tulis Cerita{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white border border-gray-100 rounded-2xl p-8 ambient-shadow">
+  <h2 class="font-heading text-2xl font-bold text-primary mb-6">Tulis Ceritamu</h2>
+  <form method="POST" class="space-y-5">{{ form.hidden_tag() }}
+    <div class="space-y-2"><label class="font-bold text-primary text-sm">Judul</label>{{ form.title(class_="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary bg-gray-50 text-sm outline-none") }}{% for e in form.title.errors %}<p class="text-error text-xs">{{ e }}</p>{% endfor %}</div>
+    <div class="space-y-2"><label class="font-bold text-primary text-sm">Cerita</label>{{ form.content(class_="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-primary bg-gray-50 text-sm outline-none min-h-[200px] resize-none") }}{% for e in form.content.errors %}<p class="text-error text-xs">{{ e }}</p>{% endfor %}</div>
+    <div class="grid grid-cols-2 gap-4"><div>{{ form.mood_tag(class_="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none") }}</div><div>{{ form.pseudonym(class_="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none", placeholder="Nama samaran (opsional)") }}</div></div>
+    {{ form.submit(class_="w-full py-3.5 rounded-full bg-primary text-white font-bold text-sm") }}
+  </form>
+</div>
+{% endblock %}

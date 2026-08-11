@@ -1,0 +1,28 @@
+"""
+Entry point CeritaKita.
+Jalankan: python run.py
+"""
+from db import ensure_database_exists
+
+ensure_database_exists()
+
+from app import create_app, db
+from app.models import (User, ChatSession, Message, ForumPost,
+                        ForumComment, MoodLog, Report, AuditLog)
+
+app = create_app()
+
+
+@app.shell_context_processor
+def make_shell_context():
+    return {"db": db, "User": User, "ChatSession": ChatSession,
+            "Message": Message, "ForumPost": ForumPost, "MoodLog": MoodLog,
+            "Report": Report, "AuditLog": AuditLog}
+
+
+if __name__ == "__main__":
+    with app.app_context():
+        db.create_all()
+        print("✅ Tabel database siap.")
+    print("\n🚀 Server: http://localhost:5000\n   CTRL+C untuk stop.\n")
+    app.run(host="0.0.0.0", port=5000, debug=True)

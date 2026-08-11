@@ -1,0 +1,38 @@
+<footer class="bg-white pt-24 pb-12 px-margin-mobile md:px-margin-desktop border-t border-gray-100">
+  <div class="max-w-container-max-width mx-auto grid grid-cols-1 md:grid-cols-4 gap-16">
+    <div class="md:col-span-1 space-y-6">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-primary font-bold">bubble_chart</span></div>
+        <div class="font-heading text-xl font-bold text-primary">{{ app_name }}</div>
+      </div>
+      <p class="text-on-surface-variant leading-relaxed text-sm">Platform kesehatan mental inklusif, anonim, dan gratis.</p>
+    </div>
+    <div class="space-y-6">
+      <h4 class="font-heading font-bold text-primary">Tautan Cepat</h4>
+      <ul class="space-y-4 text-on-surface-variant font-medium text-sm">
+        <li><a href="{{ url_for('main.index') }}" class="hover:text-primary">Beranda</a></li>
+        <li><a href="{{ url_for('main.about') }}" class="hover:text-primary">Tentang Kami</a></li>
+        <li><a href="{{ url_for('forum.feed') }}" class="hover:text-primary">Forum</a></li>
+      </ul>
+    </div>
+    <div class="space-y-6">
+      <h4 class="font-heading font-bold text-primary">Informasi</h4>
+      <ul class="space-y-4 text-on-surface-variant font-medium text-sm">
+        <li><a href="{{ url_for('main.emergency') }}" class="hover:text-error font-bold">Bantuan Darurat</a></li>
+        <li><a href="{{ url_for('main.privacy') }}" class="hover:text-primary">Kebijakan Privasi</a></li>
+        <li><a href="{{ url_for('main.tos') }}" class="hover:text-primary">Syarat & Ketentuan</a></li>
+      </ul>
+    </div>
+    <div class="space-y-6">
+      <h4 class="font-heading font-bold text-primary">Bantuan Profesional</h4>
+      <div class="space-y-3 text-on-surface-variant text-sm">
+        <p class="flex items-center gap-2 font-bold text-error"><span class="material-symbols-outlined text-[18px]">emergency</span>Hotline 119 ext. 8</p>
+        <p class="text-xs">{{ app_name }} bukan layanan terapi profesional.</p>
+      </div>
+    </div>
+  </div>
+  <div class="max-w-container-max-width mx-auto mt-20 pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-on-surface-variant opacity-60">
+    <p>© {{ current_year }} {{ app_name }}.</p>
+    <div class="flex gap-6"><a href="{{ url_for('main.privacy') }}" class="hover:text-primary">Privasi</a><a href="{{ url_for('main.tos') }}" class="hover:text-primary">Ketentuan</a></div>
+  </div>
+</footer>

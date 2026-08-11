@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+
+# Environment variables (real secrets — .env.example stays tracked)
+.env
+
+# Logs
+logs/*.log
+logs/*.out
+
+# User-uploaded content
+app/static/chat_uploads/*
+app/static/avatars/*
+!app/static/chat_uploads/.gitkeep
+!app/static/avatars/.gitkeep
+
+# Editor/OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

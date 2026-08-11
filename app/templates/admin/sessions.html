@@ -1,0 +1,115 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Chat Sessions{% endblock %}
+{% block page_subtitle %}Monitor and manage active counseling sessions{% endblock %}
+
+{% block content %}
+<!-- Top Actions Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl shadow-soft border border-slate-100">
+  
+  <!-- Filters -->
+  <div class="flex flex-wrap items-center gap-2">
+    {% for val, lbl in [('','All'),('waiting','Waiting'),('active','Active'),('ended','Ended')] %}
+    <a href="{{ url_for('admin.sessions', status=val, crisis='1' if crisis_only else '') }}" 
+       class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 
+       {{ 'bg-brand-900 text-white shadow-md' if status_filter == val else 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800' }}">
+      {{ lbl }}
+    </a>
+    {% endfor %}
+    
+    <div class="w-px h-6 bg-slate-200 mx-2 hidden sm:block"></div>
+    
+    <a href="{{ url_for('admin.sessions', crisis='1' if not crisis_only else '') }}" 
+       class="px-4 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-1 border
+       {{ 'bg-red-600 text-white border-red-600 shadow-md' if crisis_only else 'bg-white border-red-200 text-red-600 hover:bg-red-50' }}">
+       <span class="material-symbols-outlined text-[16px]">{{ 'warning' if crisis_only else 'error_outline' }}</span>
+       Crisis Only
+    </a>
+  </div>
+</div>
+
+<!-- Data Table -->
+<div class="bg-white border border-slate-100 rounded-2xl overflow-hidden shadow-soft">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm enterprise-table">
+      <thead>
+        <tr>
+          <th class="px-6 py-4 text-left">Session ID</th>
+          <th class="px-6 py-4 text-left">Topic</th>
+          <th class="px-6 py-4 text-left">Status</th>
+          <th class="px-6 py-4 text-center">Alerts</th>
+          <th class="px-6 py-4 text-left">Started</th>
+          <th class="px-6 py-4 text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-50">
+        {% for s in sessions %}
+        <tr class="group transition-colors {{ 'bg-red-50/30' if s.has_crisis_flag else '' }}">
+          <td class="px-6 py-4">
+            <div class="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded inline-block text-xs border border-slate-200">#{{ s.session_code }}</div>
+          </td>
+          
+          <td class="px-6 py-4">
+            <div class="text-slate-700 font-medium">{{ s.topic or 'General' }}</div>
+          </td>
+          
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-bold capitalize 
+              {% if s.status == 'active' %} bg-brand-100 text-brand-800 border border-brand-200
+              {% elif s.status == 'waiting' %} bg-yellow-100 text-yellow-800 border border-yellow-200
+              {% else %} bg-slate-100 text-slate-600 border border-slate-200 {% endif %}">
+              
+              <span class="w-1.5 h-1.5 rounded-full mr-1.5 
+                {% if s.status == 'active' %} bg-brand-600 
+                {% elif s.status == 'waiting' %} bg-yellow-600 
+                {% else %} bg-slate-400 {% endif %}"></span>
+              {{ s.status }}
+            </span>
+          </td>
+          
+          <td class="px-6 py-4 text-center">
+            {% if s.has_crisis_flag %}
+              <div class="inline-flex items-center justify-center bg-red-100 text-red-600 w-8 h-8 rounded-full border border-red-200 shadow-sm" title="Crisis Keywords Detected">
+                <span class="material-symbols-outlined text-[16px]">warning</span>
+              </div>
+            {% else %}
+              <span class="text-slate-300">-</span>
+            {% endif %}
+          </td>
+          
+          <td class="px-6 py-4 text-slate-500 text-xs font-medium">{{ time_ago(s.started_at) }}</td>
+          
+          <td class="px-6 py-4 text-right">
+            <div class="flex items-center justify-end gap-2">
+              <a href="{{ url_for('admin.view_session', code=s.session_code) }}" class="w-8 h-8 rounded-lg flex items-center justify-center bg-slate-50 text-brand-600 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 transition-colors" title="View Details">
+                <span class="material-symbols-outlined text-[18px]">visibility</span>
+              </a>
+              
+              {% if s.status != 'ended' %}
+              <form method="POST" action="{{ url_for('admin.admin_end_session', code=s.session_code) }}" class="inline-block">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" onclick="return confirm('Are you sure you want to forcibly end this session?')" class="w-8 h-8 rounded-lg flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 transition-colors" title="Force End Session">
+                  <span class="material-symbols-outlined text-[18px]">cancel</span>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="6">
+            <div class="flex flex-col items-center justify-center py-16 text-center">
+              <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
+                <span class="material-symbols-outlined text-3xl">forum</span>
+              </div>
+              <p class="text-slate-600 font-semibold mb-1">No sessions found</p>
+              <p class="text-slate-400 text-sm">There are no sessions matching your current filters.</p>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

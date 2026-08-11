@@ -1,0 +1,38 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Mood Tracker{% endblock %}
+{% block page_subtitle %}Kenali perasaanmu hari ini{% endblock %}
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <div class="bg-white border border-gray-100 rounded-2xl p-6 ambient-shadow mb-6">
+    <form method="POST" class="space-y-5">{{ form.hidden_tag() }}
+      <label class="block font-bold text-primary text-sm mb-3">Pilih moodmu</label>
+      <div class="grid grid-cols-5 gap-2">
+        {% for val, lbl in [('happy','😊 Senang'),('neutral','😐 Biasa'),('sad','😭 Sedih'),('anxious','😰 Cemas'),('overthink','🌀 Overthink')] %}
+        <label class="cursor-pointer"><input type="radio" name="mood" value="{{ val }}" class="peer sr-only" required>
+          <div class="flex flex-col items-center gap-2 p-3 bg-gray-50 border-2 border-transparent rounded-xl peer-checked:border-primary peer-checked:bg-accent/20 hover:border-gray-200 transition-all">
+            <span class="text-3xl">{{ lbl.split()[0] }}</span><span class="text-[10px] font-bold text-primary">{{ lbl.split(' ',1)[1] }}</span>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+      <div>{{ form.note(class_="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none min-h-[60px] resize-none", placeholder="Cerita singkat (opsional)...") }}</div>
+      {{ form.submit(class_="w-full py-3.5 rounded-full bg-primary text-white font-bold text-sm") }}
+    </form>
+  </div>
+  {% if dominant_mood %}
+  <div class="bg-primary text-white rounded-2xl p-6 mb-6 flex items-center gap-5">
+    <div class="text-5xl">{{ MOOD_EMOJI.get(dominant_mood, '😊') }}</div>
+    <div><div class="text-accent text-xs font-bold mb-1">MOOD DOMINAN MINGGU INI</div><div class="font-heading text-2xl font-bold">{{ MOOD_LABEL.get(dominant_mood, dominant_mood) }}</div><div class="text-white/70 text-xs">{{ logs|length }} catatan 7 hari terakhir</div></div>
+  </div>
+  {% endif %}
+  <div class="bg-white border border-gray-100 rounded-2xl p-6 ambient-shadow">
+    <h3 class="font-heading font-bold text-primary mb-4">Riwayat Mood</h3>
+    {% for log in history %}
+    <div class="flex items-start gap-4 p-3 bg-gray-50 rounded-xl mb-2">
+      <div class="text-2xl">{{ MOOD_EMOJI.get(log.mood, '😐') }}</div>
+      <div class="flex-1"><div class="flex justify-between"><div class="font-bold text-primary text-sm">{{ MOOD_LABEL.get(log.mood, log.mood) }}</div><div class="text-xs text-on-surface-variant">{{ log.created_at.strftime('%d %b, %H:%M') }}</div></div>{% if log.note %}<p class="text-sm text-on-surface-variant">{{ log.note }}</p>{% endif %}</div>
+    </div>
+    {% else %}<p class="text-center text-on-surface-variant text-sm py-6">Belum ada catatan.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Bantuan Darurat — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-12">
+  <div class="bg-error-container border-2 border-error rounded-custom p-8 mb-8">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 bg-error rounded-xl flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-white">emergency</span></div>
+      <div><h1 class="font-heading text-2xl md:text-3xl font-bold text-error">Butuh bantuan segera?</h1><p class="text-error/80 text-sm mt-1">Kalau kamu dalam situasi berbahaya atau berpikir menyakiti diri sendiri — tolong jangan tunggu.</p></div>
+    </div>
+  </div>
+  {% for icon, title, desc, action in [("call","Kemenkes — Sehat Jiwa","Layanan kesehatan jiwa nasional. 24 jam.","119 ext. 8"),("support_agent","Into The Light Indonesia","Komunitas pencegahan bunuh diri.","intothelightid.org"),("local_hospital","Puskesmas / IGD Terdekat","Untuk kondisi medis darurat, datang ke IGD rumah sakit terdekat.","")] %}
+  <div class="bg-white border border-gray-200 rounded-custom p-6 ambient-shadow mb-4">
+    <div class="flex items-start gap-4">
+      <div class="w-12 h-12 bg-accent rounded-xl flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-primary">{{ icon }}</span></div>
+      <div class="flex-1"><h3 class="font-heading text-lg font-bold text-primary">{{ title }}</h3><p class="text-on-surface-variant text-sm mb-2">{{ desc }}</p>
+        {% if action and '.' in action %}<a href="https://www.{{ action }}" target="_blank" class="text-primary font-bold text-sm hover:underline">{{ action }}</a>
+        {% elif action %}<a href="tel:119" class="inline-flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-full font-bold text-sm">{{ action }}</a>{% endif %}
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+  <div class="mt-8 bg-primary text-white p-6 rounded-custom"><h4 class="font-heading font-bold text-lg mb-2">Kenapa kami tidak menangani krisis sendiri?</h4><p class="text-white/80 text-sm leading-relaxed">{{ app_name }} dibangun oleh komunitas pembimbing. Pendengar kami <strong class="text-accent">tidak siap menangani krisis serius</strong>. Kamu pantas mendapatkan bantuan profesional.</p></div>
+</section>
+{% endblock %}

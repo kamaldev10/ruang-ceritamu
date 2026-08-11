@@ -1,0 +1,32 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Mulai Curhat{% endblock %}
+{% block page_subtitle %}Pilih cara ternyamanmu{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div class="bg-primary text-white p-8 rounded-2xl relative overflow-hidden">
+    <div class="absolute -top-10 -right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl"></div>
+    <div class="relative z-10">
+      <div class="w-14 h-14 bg-accent rounded-xl flex items-center justify-center mb-5"><span class="material-symbols-outlined text-primary text-3xl">forum</span></div>
+      <h2 class="font-heading text-2xl font-bold mb-3">Chat Anonim 1:1</h2>
+      <p class="text-white/70 text-sm mb-6">Pendengar dipilihkan acak oleh sistem. Saling anonim sepenuhnya.</p>
+      <form method="POST" action="{{ url_for('chat.start') }}" class="space-y-4">
+        {{ form.hidden_tag() }}
+        <div><label class="block text-xs font-bold text-accent mb-1.5">Topik (opsional)</label>{{ form.topic(class_="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white text-sm focus:outline-none focus:border-accent") }}</div>
+        <button type="submit" class="w-full bg-accent text-primary py-3.5 rounded-full font-bold text-sm hover:scale-105 transition-transform">Cari Pendengar</button>
+      </form>
+    </div>
+  </div>
+  <div class="bg-white border border-gray-100 p-8 rounded-2xl ambient-shadow">
+    <div class="w-14 h-14 bg-accent/20 rounded-xl flex items-center justify-center mb-5"><span class="material-symbols-outlined text-primary text-3xl">groups</span></div>
+    <h2 class="font-heading text-2xl font-bold text-primary mb-3">Forum Cerita Publik</h2>
+    <p class="text-on-surface-variant text-sm mb-6">Tulis ceritamu dengan nama samaran. Dapatkan dukungan komunitas.</p>
+    <a href="{{ url_for('forum.new_post') }}" class="block bg-primary text-white py-3.5 rounded-full font-bold text-sm text-center mb-3">Tulis Cerita</a>
+    <a href="{{ url_for('forum.feed') }}" class="block border border-primary text-primary py-3.5 rounded-full font-bold text-sm text-center hover:bg-primary hover:text-white transition-colors">Baca Cerita Dulu</a>
+  </div>
+</div>
+<div class="mt-6 bg-error-container/50 border border-error/20 rounded-xl p-4 flex items-start gap-3 text-sm">
+  <span class="material-symbols-outlined text-error shrink-0">info</span>
+  <div class="text-error/90">Pendengar kami pembimbing terlatih dasar, bukan terapis. Untuk krisis serius, hubungi <a href="{{ url_for('main.emergency') }}" class="underline font-bold">119 ext. 8</a>.</div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Notifikasi{% endblock %}
+{% block page_subtitle %}{{ notifs|length }} notifikasi{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="flex justify-between items-center mb-5">
+    <h2 class="font-heading text-2xl font-bold text-primary">Notifikasi</h2>
+    {% if notifs %}
+    <form method="POST" action="{{ url_for('notif.read_all') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="text-sm text-primary font-bold hover:underline">Tandai semua dibaca</button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if notifs %}
+    <div class="space-y-2">
+      {% for n in notifs %}
+      <a href="{{ url_for('notif.read', nid=n.id) }}" class="flex items-start gap-4 p-4 rounded-2xl border transition-colors {{ 'bg-accent/10 border-accent/30' if not n.is_read else 'bg-white border-gray-100' }} hover:border-primary/30">
+        <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0
+          {% if n.notif_type == 'crisis' %}bg-error text-white
+          {% elif n.notif_type == 'comment' %}bg-blue-100 text-blue-600
+          {% elif n.notif_type == 'session' %}bg-accent text-primary
+          {% else %}bg-gray-100 text-gray-600{% endif %}">
+          <span class="material-symbols-outlined text-[20px]">
+            {% if n.notif_type == 'crisis' %}warning
+            {% elif n.notif_type == 'comment' %}chat_bubble
+            {% elif n.notif_type == 'session' %}forum
+            {% else %}notifications{% endif %}
+          </span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="flex justify-between items-start gap-2">
+            <div class="font-bold text-primary text-sm {{ '' if n.is_read else '' }}">{{ n.title }}</div>
+            {% if not n.is_read %}<span class="w-2 h-2 bg-accent rounded-full shrink-0 mt-1.5"></span>{% endif %}
+          </div>
+          {% if n.message %}<p class="text-xs text-on-surface-variant line-clamp-2 mt-0.5">{{ n.message }}</p>{% endif %}
+          <span class="text-[11px] text-gray-400 mt-1 block">{{ n.created_at.strftime('%d %b %Y, %H:%M') }}</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="bg-white rounded-2xl border border-gray-100 p-12 text-center ambient-shadow">
+      <div class="w-16 h-16 bg-gray-100 rounded-full mx-auto flex items-center justify-center mb-4"><span class="material-symbols-outlined text-gray-400 text-3xl">notifications_off</span></div>
+      <p class="text-on-surface-variant">Belum ada notifikasi.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

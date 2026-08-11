@@ -1,0 +1,25 @@
+<header class="sticky top-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+  <div class="max-w-container-max-width mx-auto px-margin-mobile md:px-margin-desktop py-5 flex justify-between items-center">
+    <a href="{{ url_for('main.index') }}" class="flex items-center gap-2">
+      <div class="w-8 h-8 bg-accent rounded-lg flex items-center justify-center"><span class="material-symbols-outlined text-primary font-bold">bubble_chart</span></div>
+      <div class="font-heading text-xl font-bold text-primary tracking-tight">{{ app_name }}</div>
+    </a>
+    <nav class="hidden lg:flex items-center gap-10">
+      <a class="text-primary font-bold text-[14px] hover:text-accent transition-colors" href="{{ url_for('main.index') }}">Beranda</a>
+      <a class="text-on-surface-variant font-medium text-[14px] hover:text-primary transition-colors" href="{{ url_for('forum.feed') }}">Forum</a>
+      <a class="text-on-surface-variant font-medium text-[14px] hover:text-primary transition-colors" href="{{ url_for('main.about') }}">Tentang Kami</a>
+      <a class="text-on-surface-variant font-medium text-[14px] hover:text-primary transition-colors" href="{{ url_for('main.emergency') }}">Darurat</a>
+    </nav>
+    {% if current_user.is_authenticated %}
+      {% if current_user.is_admin %}
+        <a href="{{ url_for('admin.dashboard') }}" class="bg-primary text-white px-7 py-3 rounded-full font-bold text-[14px] hover:bg-opacity-90 shadow-lg shadow-primary/10">Dashboard Admin</a>
+      {% elif current_user.is_psikolog %}
+        <a href="{{ url_for('psikolog.dashboard') }}" class="bg-primary text-white px-7 py-3 rounded-full font-bold text-[14px] hover:bg-opacity-90 shadow-lg shadow-primary/10">Dashboard</a>
+      {% else %}
+        <a href="{{ url_for('chat.pilih') }}" class="bg-primary text-white px-7 py-3 rounded-full font-bold text-[14px] hover:bg-opacity-90 shadow-lg shadow-primary/10">Mulai Curhat</a>
+      {% endif %}
+    {% else %}
+      <a href="{{ url_for('auth.login') }}" class="bg-primary text-white px-7 py-3 rounded-full font-bold text-[14px] hover:bg-opacity-90 shadow-lg shadow-primary/10">Masuk / Daftar</a>
+    {% endif %}
+  </div>
+</header>

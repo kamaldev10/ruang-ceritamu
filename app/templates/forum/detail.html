@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-10">
+  <a href="{{ url_for('forum.feed') }}" class="inline-flex items-center gap-2 text-primary text-sm font-bold mb-6"><span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali</a>
+  <article class="bg-white border border-gray-100 rounded-custom p-6 md:p-8 ambient-shadow mb-8">
+    <div class="flex items-center gap-3 mb-4">{% if post.mood_tag %}<span class="bg-accent text-primary px-3 py-1 rounded-full text-xs font-bold">#{{ post.mood_tag }}</span>{% endif %}<span class="text-xs text-on-surface-variant">{{ time_ago(post.created_at) }}{% if post.pseudonym %} · <strong>{{ post.pseudonym }}</strong>{% endif %}</span></div>
+    <h1 class="font-heading text-3xl font-bold text-primary mb-5">{{ post.title }}</h1>
+    <div class="text-on-surface-variant leading-relaxed whitespace-pre-line">{{ post.content }}</div>
+    <div class="flex items-center gap-4 pt-6 mt-6 border-t border-gray-100">
+      <button onclick="likePost({{ post.id }})" class="flex items-center gap-2 bg-error-container px-4 py-2 rounded-full text-error text-sm font-bold"><span class="material-symbols-outlined text-[18px]">favorite</span><span id="lc">{{ post.likes_count or 0 }}</span></button>
+      {% if current_user.is_authenticated %}<a href="{{ url_for('forum.report_post', post_id=post.id) }}" class="ml-auto text-sm text-on-surface-variant hover:text-error flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">flag</span>Laporkan</a>{% endif %}
+    </div>
+  </article>
+  <h2 class="font-heading text-2xl font-bold text-primary mb-4">Komentar ({{ comments|length }})</h2>
+  {% if current_user.is_authenticated %}
+  <div class="bg-white border border-gray-100 rounded-custom p-5 ambient-shadow mb-5">
+    <form method="POST" class="space-y-3">{{ form.hidden_tag() }}{{ form.content(class_="w-full bg-gray-50 border border-gray-100 rounded-xl p-4 text-sm min-h-[80px] resize-none outline-none focus:border-primary", placeholder="Tulis dukunganmu...") }}
+    <div class="flex items-center gap-3">{{ form.pseudonym(class_="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-2 text-sm outline-none", placeholder="Nama samaran (opsional)") }}{{ form.submit(class_="bg-primary text-white px-6 py-2.5 rounded-full font-bold text-sm") }}</div></form>
+  </div>
+  {% endif %}
+  {% for c in comments %}
+  <div class="bg-white border border-gray-100 rounded-custom p-5 mb-3">
+    <div class="flex items-center gap-3 mb-2"><div class="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center"><span class="material-symbols-outlined text-[16px]">person</span></div><div><div class="font-bold text-primary text-sm">{{ c.pseudonym or 'Anonim' }}</div><div class="text-xs text-on-surface-variant">{{ time_ago(c.created_at) }}</div></div></div>
+    <p class="text-on-surface-variant text-sm">{{ c.content }}</p>
+  </div>
+  {% else %}<p class="text-center text-on-surface-variant text-sm py-6">Belum ada komentar.</p>{% endfor %}
+</section>
+<script>async function likePost(id){const r=await fetch(`/forum/post/${id}/like`,{method:"POST",headers:{"X-CSRFToken":"{{ csrf_token() }}"}});if(r.ok){const d=await r.json();document.getElementById("lc").textContent=d.likes_count}}</script>
+{% endblock %}

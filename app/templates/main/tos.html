@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Syarat & Ketentuan — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-16">
+  <div class="inline-flex items-center gap-3 text-primary font-bold text-sm mb-4"><span class="w-10 h-[2px] bg-accent"></span>Ketentuan Layanan</div>
+  <h1 class="font-heading text-4xl font-bold text-primary mb-8">Syarat & Ketentuan {{ app_name }}</h1>
+  <div class="prose max-w-none text-on-surface-variant leading-relaxed space-y-6 text-sm">
+    <p><em>Terakhir diperbarui: {{ current_year }}</em></p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">1. Tentang Layanan</h2>
+    <p>{{ app_name }} adalah platform peer-support (dukungan sebaya) berbasis komunitas. Kami <strong>bukan penyedia layanan kesehatan jiwa profesional</strong>. Pendengar kami adalah pembimbing terlatih dasar, bukan psikolog, psikiater, atau konselor berlisensi.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">2. Kelayakan</h2>
+    <p>Anda harus berusia minimal 13 tahun untuk menggunakan layanan ini. Dengan mendaftar, Anda menyatakan bahwa Anda memenuhi syarat usia ini.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">3. Kode Etik Pengguna</h2>
+    <div class="bg-error-container/30 border border-error/20 rounded-2xl p-5 space-y-2">
+      <p>🚫 Dilarang membagikan konten pornografi, kekerasan grafis, atau ujaran kebencian</p>
+      <p>🚫 Dilarang menggunakan platform untuk tujuan komersial atau spam</p>
+      <p>🚫 Dilarang membagikan informasi pribadi orang lain tanpa izin</p>
+      <p>🚫 Dilarang menyamar sebagai pendengar terlatih tanpa otorisasi admin</p>
+    </div>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">4. Batasan Layanan</h2>
+    <p>Kami tidak menjamin ketersediaan pendengar 24/7. Kami tidak bertanggung jawab atas saran yang diberikan oleh pendengar dalam sesi chat. Untuk situasi krisis darurat, hubungi <strong>119 ext. 8</strong> atau kunjungi <a href="{{ url_for('main.emergency') }}" class="text-primary font-bold underline">halaman darurat</a>.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">5. Moderasi Konten</h2>
+    <p>Tim admin berhak untuk menyembunyikan atau menghapus konten yang melanggar kode etik, serta menangguhkan akun pengguna yang melakukan pelanggaran berulang.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">6. Penafian (Disclaimer)</h2>
+    <p class="font-bold text-primary">{{ app_name }} disediakan "sebagaimana adanya" (as-is). Kami tidak memberikan jaminan bahwa layanan ini cocok untuk menangani kondisi kesehatan jiwa tertentu. Selalu konsultasikan dengan profesional berlisensi untuk diagnosis dan perawatan.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">7. Perubahan Ketentuan</h2>
+    <p>Kami dapat memperbarui ketentuan ini dari waktu ke waktu. Perubahan signifikan akan diinformasikan melalui notifikasi di platform.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">8. Kontak</h2>
+    <p>Pertanyaan: <strong>halo@ceritakita.id</strong></p>
+  </div>
+</section>
+{% endblock %}

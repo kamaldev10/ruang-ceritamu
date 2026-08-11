@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Kebijakan Privasi — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-16">
+  <div class="inline-flex items-center gap-3 text-primary font-bold text-sm mb-4"><span class="w-10 h-[2px] bg-accent"></span>Kebijakan Privasi</div>
+  <h1 class="font-heading text-4xl font-bold text-primary mb-8">Kebijakan Privasi {{ app_name }}</h1>
+  <div class="prose max-w-none text-on-surface-variant leading-relaxed space-y-6 text-sm">
+    <p><em>Terakhir diperbarui: {{ current_year }}</em></p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">1. Data yang Kami Kumpulkan</h2>
+    <p>Saat Anda mendaftar, kami mengumpulkan: <strong>username (samaran)</strong>, <strong>alamat email</strong>, dan <strong>password</strong> yang terenkripsi. Kami <strong>tidak</strong> mengumpulkan nama asli, alamat, nomor telepon, atau identitas resmi lainnya kecuali Anda secara sukarela mengisinya di profil.</p>
+    <p>Saat menggunakan layanan: isi pesan chat (dienkripsi di database), cerita forum, catatan mood, dan metadata teknis (IP address, waktu akses) untuk keamanan.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">2. Bagaimana Data Digunakan</h2>
+    <p>Data Anda digunakan untuk: menyediakan layanan curhat anonim, mencocokan Anda dengan pendengar, moderasi konten, deteksi situasi krisis untuk keselamatan, dan peningkatan layanan. Kami <strong>tidak pernah menjual</strong> data Anda kepada pihak ketiga.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">3. Penyimpanan & Keamanan</h2>
+    <p>Data disimpan di server yang dilindungi. Password dienkripsi satu arah (hashed). Sesi chat disimpan selama akun aktif. Log audit disimpan maksimal 1 tahun.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">4. Hak Anda (UU PDP Indonesia)</h2>
+    <p>Sesuai Undang-Undang Perlindungan Data Pribadi (UU No. 27 Tahun 2022), Anda berhak untuk:</p>
+    <div class="bg-accent/10 border border-accent/20 rounded-2xl p-5 space-y-2">
+      <p>✅ <strong>Mengakses</strong> data pribadi Anda yang kami simpan</p>
+      <p>✅ <strong>Memperbarui</strong> data yang tidak akurat melalui halaman Pengaturan</p>
+      <p>✅ <strong>Menghapus akun</strong> Anda kapan saja (menu Pengaturan, lalu Hapus Akun)</p>
+      <p>✅ <strong>Menarik persetujuan</strong> atas pemrosesan data</p>
+      <p>✅ <strong>Mengajukan keluhan</strong> kepada otoritas perlindungan data</p>
+    </div>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">5. Retensi Data</h2>
+    <p>Data akun aktif disimpan selama akun tersebut aktif. Saat Anda menghapus akun, data pribadi (username, email, bio) akan <strong>dianonimkan secara permanen</strong>. Riwayat chat dan postingan forum akan tetap ada dalam bentuk anonim.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">6. Cookie</h2>
+    <p>Kami menggunakan cookie sesi untuk menjaga status login Anda. Kami tidak menggunakan cookie pelacakan atau iklan pihak ketiga.</p>
+
+    <h2 class="font-heading text-xl font-bold text-primary mt-8">7. Kontak</h2>
+    <p>Untuk pertanyaan terkait privasi, hubungi: <strong>privasi@ceritakita.id</strong></p>
+  </div>
+</section>
+{% endblock %}

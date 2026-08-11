@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Tentang — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-16 space-y-8">
+  <div class="inline-flex items-center gap-3 text-primary font-bold text-sm"><span class="w-10 h-[2px] bg-accent"></span>Tentang CeritaKita</div>
+  <h1 class="font-heading text-4xl md:text-5xl font-bold text-primary leading-tight">Ruang aman yang dibangun komunitas, untuk komunitas.</h1>
+  <div class="space-y-5 text-on-surface-variant text-base leading-relaxed">
+    <p><strong class="text-primary">{{ app_name }}</strong> adalah inisiatif sosial yang menyediakan ruang curhat anonim gratis untuk anak muda Indonesia.</p>
+    <p>Kami <strong class="text-primary">bukan layanan terapi profesional</strong>. Pendengar kami adalah pembimbing terlatih dasar — mereka tidak memberi diagnosis. Yang mereka tawarkan: <em>kesediaan mendengar tanpa menghakimi</em>.</p>
+    <p>Identitas kamu maupun pendengar dirahasiakan satu sama lain. Sistem memasangkan kalian secara acak via kode sesi.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
+    {% for icon, title, desc in [("visibility_off","Anonim Total","Username samaran. Pendengar tidak tahu siapa kamu."),("volunteer_activism","Berbasis Pembimbing","Bukan layanan komersial. Bukan klinik."),("emergency","Jujur Soal Batas","Untuk krisis serius, kami rujuk ke hotline profesional.")] %}
+    <div class="bg-primary text-white p-6 rounded-custom">
+      <div class="w-10 h-10 bg-accent/20 rounded-lg flex items-center justify-center mb-3"><span class="material-symbols-outlined text-accent">{{ icon }}</span></div>
+      <h4 class="font-heading font-bold mb-1">{{ title }}</h4>
+      <p class="text-sm text-white/70">{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

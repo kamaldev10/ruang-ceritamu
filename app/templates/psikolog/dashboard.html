@@ -1,0 +1,149 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Counselor Dashboard{% endblock %}
+{% block page_subtitle %}Thank you for being here to listen 💚{% endblock %}
+
+{% block content %}
+<!-- Metrics Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="bg-brand-900 text-white rounded-2xl p-6 shadow-md relative overflow-hidden flex flex-col justify-between">
+    <div class="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+    <div class="text-[11px] font-bold uppercase tracking-wider text-brand-100 mb-2">Waiting Queue</div>
+    <div class="flex items-end justify-between">
+      <div class="font-heading text-5xl font-extrabold">{{ waiting|length }}</div>
+      <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+        <span class="material-symbols-outlined text-[20px]">group</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-soft flex flex-col justify-between">
+    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Active Sessions</div>
+    <div class="flex items-end justify-between">
+      <div class="font-heading text-4xl font-bold text-slate-800">{{ active_mine|length }}</div>
+      <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]">chat</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-soft flex flex-col justify-between">
+    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Completed This Week</div>
+    <div class="flex items-end justify-between">
+      <div class="font-heading text-4xl font-bold text-slate-800">{{ done_this_week }}</div>
+      <div class="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
+        <span class="material-symbols-outlined text-[20px]">task_alt</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+  
+  <!-- Waiting Queue -->
+  <div class="bg-white border border-slate-100 rounded-2xl shadow-soft overflow-hidden flex flex-col">
+    <div class="p-5 border-b border-slate-50 flex items-center justify-between">
+      <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2">
+        <span class="material-symbols-outlined text-slate-400">pending_actions</span>
+        Waiting Queue
+      </h3>
+      {% if waiting %}
+        <span class="inline-flex items-center justify-center bg-brand-100 text-brand-700 text-xs font-bold px-2 py-0.5 rounded-full min-w-[24px]">
+          {{ waiting|length }}
+        </span>
+      {% endif %}
+    </div>
+    
+    <div class="p-5 flex-1 overflow-y-auto max-h-[400px]">
+      <div class="space-y-3">
+        {% for s in waiting %}
+        <div class="group flex items-center justify-between p-4 bg-slate-50 hover:bg-slate-100 border border-slate-100 hover:border-slate-200 rounded-xl transition-all">
+          <div>
+            <div class="font-bold text-slate-700 text-sm flex items-center gap-2 mb-1">
+              <span class="font-mono text-slate-500 bg-white px-1.5 py-0.5 rounded border border-slate-200 text-xs">#{{ s.session_code }}</span>
+              {% if s.has_crisis_flag %}
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-100 text-red-600" title="Crisis Detected">
+                  <span class="material-symbols-outlined text-[12px]">warning</span>
+                </span>
+              {% endif %}
+            </div>
+            <div class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+              {{ s.topic or 'General Counseling' }} 
+              <span class="text-slate-300 mx-1">•</span> 
+              {{ time_ago(s.started_at) }}
+            </div>
+          </div>
+          <a href="{{ url_for('psikolog.take', code=s.session_code) }}" class="shrink-0 bg-white hover:bg-brand-900 border border-slate-200 hover:border-brand-900 text-slate-600 hover:text-white px-4 py-2 rounded-lg text-xs font-bold shadow-sm transition-all group-hover:shadow">
+            Accept Session
+          </a>
+        </div>
+        {% else %}
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+          <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-300 mb-3 shadow-sm border border-slate-100">
+            <span class="material-symbols-outlined text-3xl">check_circle</span>
+          </div>
+          <p class="text-slate-500 font-semibold text-sm">No one is waiting.</p>
+          <p class="text-slate-400 text-xs">Great job!</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Active Sessions -->
+  <div class="bg-white border border-slate-100 rounded-2xl shadow-soft overflow-hidden flex flex-col">
+    <div class="p-5 border-b border-slate-50 flex items-center justify-between">
+      <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2">
+        <span class="material-symbols-outlined text-slate-400">forum</span>
+        Active Sessions
+      </h3>
+    </div>
+    
+    <div class="p-5 flex-1 overflow-y-auto max-h-[400px]">
+      <div class="space-y-3">
+        {% for s in active_mine %}
+        <a href="{{ url_for('chat.room', code=s.session_code) }}" class="group flex items-center justify-between p-4 bg-brand-50 hover:bg-brand-100 border border-brand-100 hover:border-brand-200 rounded-xl transition-all">
+          <div>
+            <div class="font-bold text-brand-900 text-sm flex items-center gap-2 mb-1">
+              <span class="font-mono text-brand-600 bg-white px-1.5 py-0.5 rounded border border-brand-200 text-xs">#{{ s.session_code }}</span>
+              {% if s.has_crisis_flag %}
+                <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-red-100 text-red-600 shadow-sm" title="Crisis Detected">
+                  <span class="material-symbols-outlined text-[12px]">warning</span>
+                </span>
+              {% endif %}
+            </div>
+            <div class="text-xs font-medium text-brand-700/80 flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-400"></span>
+              {{ s.topic or 'General Counseling' }}
+            </div>
+          </div>
+          <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-brand-600 shadow-sm group-hover:scale-110 group-hover:shadow transition-all">
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+          </div>
+        </a>
+        {% else %}
+        <div class="flex flex-col items-center justify-center py-12 text-center">
+          <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
+            <span class="material-symbols-outlined text-3xl">chat_bubble_outline</span>
+          </div>
+          <p class="text-slate-500 font-semibold text-sm">No active sessions.</p>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- Reminder Alert -->
+<div class="mt-8 bg-red-50 border border-red-100 rounded-2xl p-5 flex items-start gap-4 text-sm shadow-sm relative overflow-hidden">
+  <div class="absolute left-0 top-0 bottom-0 w-1 bg-red-400"></div>
+  <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center shrink-0">
+    <span class="material-symbols-outlined text-[20px]">priority_high</span>
+  </div>
+  <div class="text-red-800 leading-relaxed pt-0.5">
+    <strong class="block text-red-900 mb-1 text-base">Important Reminder</strong>
+    If a user demonstrates signs of crisis, please immediately suggest they contact <strong>119 ext. 8</strong> and escalate the session to an admin if necessary.
+  </div>
+</div>
+{% endblock %}

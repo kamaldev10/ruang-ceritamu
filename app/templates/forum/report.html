@@ -1,0 +1,12 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Laporkan Cerita{% endblock %}
+{% block content %}
+<div class="max-w-2xl mx-auto bg-white border border-gray-100 rounded-2xl p-8 ambient-shadow">
+  <h2 class="font-heading text-2xl font-bold text-primary mb-2">Laporkan Cerita</h2>
+  <div class="bg-gray-50 rounded-xl p-4 mb-6"><div class="text-xs text-on-surface-variant mb-1">Cerita:</div><div class="font-bold text-primary">{{ post.title }}</div></div>
+  <form method="POST" class="space-y-5">{{ form.hidden_tag() }}
+    <div>{{ form.reason(class_="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-sm outline-none min-h-[120px] resize-none", placeholder="Ceritakan alasan laporan...") }}{% for e in form.reason.errors %}<p class="text-error text-xs">{{ e }}</p>{% endfor %}</div>
+    {{ form.submit(class_="w-full py-3.5 rounded-full bg-error text-white font-bold text-sm") }}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends "base_dashboard.html" %}
+{% block page_title %}Sesi {{ sess.session_code }}{% endblock %}
+{% block page_subtitle %}{% if sess.topic %}{{ sess.topic|capitalize }}{% else %}Bebas{% endif %} · {{ sess.status }}{% endblock %}
+
+{% block head_extra %}
+<style>
+  .chat-wallpaper {
+    background-color: #EAF6EF;
+    background-image: radial-gradient(circle, rgba(10,54,34,0.06) 1.5px, transparent 1.5px);
+    background-size: 22px 22px;
+  }
+  .tick { font-size: 15px; line-height: 1; }
+  .tick.read { color: #34D3A0; }
+  .typing-dot { animation: typingBounce 1.2s infinite ease-in-out; }
+  .typing-dot:nth-child(2) { animation-delay: .15s; }
+  .typing-dot:nth-child(3) { animation-delay: .3s; }
+  @keyframes typingBounce { 0%,60%,100%{ transform: translateY(0); opacity:.5 } 30%{ transform: translateY(-4px); opacity:1 } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+  <!-- Crisis alert for psikolog -->
+  {% if sess.has_crisis_flag and current_user.is_psikolog %}
+  <div class="mb-4 p-4 bg-error text-white rounded-xl flex items-start gap-3 text-sm">
+    <span class="material-symbols-outlined shrink-0">warning</span>
+    <div><strong>⚠️ CRISIS TERDETEKSI</strong> — Keyword krisis terdeteksi di sesi ini. Sarankan user hubungi <strong>119 ext. 8</strong>. Jangan tangani sendiri, eskalasi ke admin jika perlu.</div>
+  </div>
+  {% endif %}
+
+  <div class="mb-4 p-3 bg-error-container border border-error/30 rounded-xl flex items-start gap-3 text-xs">
+    <span class="material-symbols-outlined text-error shrink-0 text-[18px]">info</span>
+    <div class="text-error/90">Butuh bantuan segera? <a href="tel:119" class="underline font-bold">119 ext. 8</a> · <a href="{{ url_for('main.emergency') }}" class="underline font-bold">Halaman darurat</a></div>
+  </div>
+
+  <!-- Chat header (WhatsApp-style: avatar + nama + status) -->
+  <div class="bg-primary text-white rounded-t-2xl p-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-11 h-11 bg-accent rounded-full flex items-center justify-center text-primary shrink-0">
+        <span class="material-symbols-outlined">{{ 'support_agent' if current_user.is_user else 'person' }}</span>
+      </div>
+      <div>
+        <h2 class="font-heading text-[15px] font-bold leading-tight">
+          {% if current_user.is_user %}Pendengar{% elif current_user.is_psikolog %}Curhat #{{ sess.session_code }}{% else %}Monitor #{{ sess.session_code }}{% endif %}
+        </h2>
+        <p id="status-line" class="text-white/70 text-xs flex items-center gap-1.5">
+          <span id="status-dot" class="w-2 h-2 rounded-full {{ 'bg-green-400' if sess.status == 'active' else 'bg-accent animate-pulse' }}"></span>
+          <span id="status-text-inner">{% if sess.status == 'waiting' %}Menunggu pendengar…{% elif sess.status == 'active' %}Online{% else %}Sesi berakhir{% endif %}</span>
+        </p>
+      </div>
+    </div>
+    {% if sess.status != 'ended' %}
+    <form method="POST" action="{{ url_for('chat.end_session', code=sess.session_code) }}" onsubmit="return confirm('Yakin akhiri sesi?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="bg-white/10 text-white px-3 py-1.5 rounded-full text-xs hover:bg-white/20 flex items-center gap-1">
+        <span class="material-symbols-outlined text-[16px]">call_end</span> Akhiri
+      </button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if sess.status == 'waiting' and current_user.is_user %}
+  <div id="waiting-banner" class="p-6 bg-accent/20 border-x border-accent/40 text-center">
+    <span class="material-symbols-outlined text-primary animate-pulse text-4xl mb-2">hourglass_top</span>
+    <h3 class="font-heading font-bold text-primary mb-1">Sedang mencari pendengar...</h3>
+    <p class="text-sm text-on-surface-variant">Tetap di halaman ini.</p>
+  </div>
+  {% endif %}
+
+  <!-- Messages -->
+  <div id="messages" class="chat-wallpaper border-x border-b border-gray-100 rounded-b-2xl p-4 mb-4 ambient-shadow flex flex-col gap-1 min-h-[350px] max-h-[55vh] overflow-y-auto">
+    {% for m in messages %}
+    {% if loop.first or day_label(m.sent_at) != day_label(loop.previtem.sent_at) %}
+    <div class="flex justify-center my-2">
+      <span class="bg-white/80 text-on-surface-variant text-[11px] font-semibold px-3 py-1 rounded-full shadow-sm">{{ day_label(m.sent_at) }}</span>
+    </div>
+    {% endif %}
+    {% set is_self = (m.sender_role == 'user' and current_user.is_user) or (m.sender_role == 'psikolog' and current_user.is_psikolog) or (current_user.is_admin) %}
+    <div class="flex items-end gap-2 max-w-[85%] mt-1.5 {{ 'self-end flex-row-reverse' if is_self else 'self-start' }}" data-msg-id="{{ m.id }}">
+      <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center {{ 'bg-primary text-white' if m.sender_role == 'user' else 'bg-accent text-primary' }}"><span class="material-symbols-outlined text-[16px]">{{ 'person' if m.sender_role == 'user' else 'support_agent' }}</span></div>
+      <div class="p-2.5 rounded-2xl {{ 'bg-primary text-white rounded-br-none' if is_self else 'bg-white border border-gray-100 rounded-bl-none' }} {{ 'ring-2 ring-error' if m.is_crisis else '' }} shadow-sm">
+        {% if m.image_filename %}
+        <img src="/static/chat_uploads/{{ m.image_filename }}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>
+        {% endif %}
+        {% if m.content and m.content != '[gambar]' %}<p class="text-sm whitespace-pre-wrap break-words">{{ m.content }}</p>{% endif %}
+        <span class="flex items-center justify-end gap-1 text-[10px] {{ 'text-white/60' if is_self else 'text-gray-400' }} mt-1">
+          {{ m.sent_at.strftime('%H:%M') }}
+          {% if is_self %}<span class="material-symbols-outlined tick {{ 'read' if m.is_read else '' }}">{{ 'done_all' if m.is_read else 'done' }}</span>{% endif %}
+        </span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Crisis banner (shown dynamically via JS) -->
+  <div id="crisis-banner" class="hidden mb-4 p-4 bg-error text-white rounded-xl text-center text-sm">
+    <strong>⚠️ Apakah kamu sedang dalam krisis?</strong> Kamu tidak sendirian. Hubungi <a href="tel:119" class="underline font-bold">119 ext. 8</a> sekarang.
+  </div>
+
+  {% if sess.status != 'ended' %}
+  <div id="image-preview-wrap" class="hidden bg-white border border-gray-100 rounded-2xl p-3 mb-2 ambient-shadow flex items-center gap-3">
+    <img id="image-preview" class="w-14 h-14 rounded-lg object-cover"/>
+    <span class="flex-1 text-xs text-on-surface-variant">Gambar siap dikirim</span>
+    <button type="button" id="image-remove" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500"><span class="material-symbols-outlined text-[18px]">close</span></button>
+  </div>
+  <form id="msg-form" class="bg-white border border-gray-100 rounded-2xl p-3 ambient-shadow flex items-center gap-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="file" id="image-input" name="image" accept="image/png,image/jpeg" class="hidden"/>
+    <button type="button" id="attach-btn" class="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-primary hover:bg-gray-50"><span class="material-symbols-outlined">attach_file</span></button>
+    <input id="msg-input" name="content" type="text" maxlength="2000" placeholder="Ceritakan perasaanmu..." class="flex-1 bg-gray-50 border-none rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none"/>
+    <button type="submit" class="w-12 h-12 shrink-0 bg-primary text-white rounded-full flex items-center justify-center hover:bg-opacity-90 active:scale-95"><span class="material-symbols-outlined">send</span></button>
+  </form>
+  {% else %}
+  <div class="bg-gray-100 rounded-2xl p-6 text-center text-on-surface-variant text-sm">Sesi sudah berakhir 💚</div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const CODE="{{ sess.session_code }}",ROLE="{{ 'user' if current_user.is_user else ('psikolog' if current_user.is_psikolog else 'admin') }}",CSRF="{{ csrf_token() }}";
+const msgs=document.getElementById("messages"),stxt=document.getElementById("status-text-inner"),sdot=document.getElementById("status-dot"),
+      wb=document.getElementById("waiting-banner"),cb=document.getElementById("crisis-banner"),mf=document.getElementById("msg-form"),mi=document.getElementById("msg-input"),
+      attachBtn=document.getElementById("attach-btn"),imgInput=document.getElementById("image-input"),
+      imgPreviewWrap=document.getElementById("image-preview-wrap"),imgPreview=document.getElementById("image-preview"),imgRemove=document.getElementById("image-remove");
+let lastId=0,lastDateLabel=null;
+document.querySelectorAll("[data-msg-id]").forEach(e=>{const i=+e.dataset.msgId;if(i>lastId)lastId=i});
+{% if messages %}lastDateLabel="{{ day_label(messages[-1].sent_at) }}";{% endif %}
+function scroll(){msgs.scrollTop=msgs.scrollHeight}scroll();
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function maybeDateDivider(dateLabel){
+  if(dateLabel!==lastDateLabel){
+    const d=document.createElement("div");d.className="flex justify-center my-2";
+    d.innerHTML=`<span class="bg-white/80 text-on-surface-variant text-[11px] font-semibold px-3 py-1 rounded-full shadow-sm">${esc(dateLabel)}</span>`;
+    msgs.appendChild(d);lastDateLabel=dateLabel;
+  }
+}
+function render(m){
+  maybeDateDivider(m.date_label);
+  const self=m.sender_role===ROLE||ROLE==='admin',w=document.createElement("div");
+  w.className=`flex items-end gap-2 max-w-[85%] mt-1.5 ${self?'self-end flex-row-reverse':'self-start'}`;w.dataset.msgId=m.id;
+  const ab=m.sender_role==='user'?'bg-primary text-white':'bg-accent text-primary',
+        bb=self?'bg-primary text-white rounded-br-none':'bg-white border border-gray-100 rounded-bl-none',
+        tc=self?'text-white/60':'text-gray-400',ic=m.sender_role==='user'?'person':'support_agent',
+        cr=m.is_crisis?' ring-2 ring-error':'',
+        img=m.image?`<img src="${m.image}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>`:'',
+        cap=(m.content&&m.content!=='[gambar]')?`<p class="text-sm whitespace-pre-wrap break-words">${esc(m.content)}</p>`:'',
+        tick=self?`<span class="material-symbols-outlined tick ${m.is_read?'read':''}">${m.is_read?'done_all':'done'}</span>`:'';
+  w.innerHTML=`<div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${ab}"><span class="material-symbols-outlined text-[16px]">${ic}</span></div><div class="p-2.5 rounded-2xl ${bb}${cr} shadow-sm">${img}${cap}<span class="flex items-center justify-end gap-1 text-[10px] ${tc} mt-1">${m.sent_at}${tick}</span></div>`;
+  msgs.appendChild(w);scroll();
+  if(m.is_crisis&&cb)cb.classList.remove('hidden');
+}
+function updateReadTicks(readUpTo){
+  document.querySelectorAll("[data-msg-id]").forEach(el=>{
+    const id=+el.dataset.msgId,t=el.querySelector(".tick");
+    if(!t)return;
+    if(id<=readUpTo&&!t.classList.contains('read')){t.classList.add('read');t.textContent='done_all'}
+  });
+}
+async function poll(){
+  try{
+    const r=await fetch(`/curhat/${CODE}/messages?after_id=${lastId}`);if(!r.ok)return;const d=await r.json();
+    d.messages.forEach(m=>{render(m);if(m.id>lastId)lastId=m.id});
+    updateReadTicks(d.read_up_to||0);
+    if(d.status==="active"){sdot.className="w-2 h-2 rounded-full bg-green-400";if(wb)wb.remove()}
+    else if(d.status==="ended"){stxt.textContent="Sesi berakhir";sdot.className="w-2 h-2 rounded-full bg-gray-300";if(mf)mf.style.display="none"}
+    if(d.status!=="ended"){
+      if(d.other_typing){stxt.textContent="Mengetik…";sdot.className="w-2 h-2 rounded-full bg-green-400 animate-pulse"}
+      else if(d.status==="active"){stxt.textContent="Online";sdot.className="w-2 h-2 rounded-full bg-green-400"}
+    }
+    if(d.has_crisis&&cb)cb.classList.remove('hidden');
+  }catch(e){console.warn(e)}
+}
+if("{{ sess.status }}"!=="ended")setInterval(poll,2500);
+
+// Typing ping (throttled — kirim maksimal sekali tiap beberapa detik saat aktif mengetik)
+let lastTypingPing=0;
+mi&&mi.addEventListener("input",()=>{
+  const now=Date.now();
+  if(now-lastTypingPing>2000){
+    lastTypingPing=now;
+    fetch(`/curhat/${CODE}/typing`,{method:"POST",headers:{"X-CSRFToken":CSRF}}).catch(()=>{});
+  }
+});
+
+// Attach image
+let pendingImageFile=null;
+attachBtn&&attachBtn.addEventListener("click",()=>imgInput.click());
+imgInput&&imgInput.addEventListener("change",()=>{
+  const f=imgInput.files[0];if(!f)return;
+  pendingImageFile=f;
+  const reader=new FileReader();
+  reader.onload=e=>{imgPreview.src=e.target.result;imgPreviewWrap.classList.remove("hidden")};
+  reader.readAsDataURL(f);
+});
+imgRemove&&imgRemove.addEventListener("click",()=>{pendingImageFile=null;imgInput.value="";imgPreviewWrap.classList.add("hidden")});
+
+if(mf)mf.addEventListener("submit",async e=>{
+  e.preventDefault();
+  const c=mi.value.trim();
+  if(!c&&!pendingImageFile)return;
+  mi.value="";mi.disabled=true;
+  try{
+    const fd=new FormData();fd.append("content",c);fd.append("csrf_token",CSRF);
+    if(pendingImageFile)fd.append("image",pendingImageFile);
+    const r=await fetch(`/curhat/${CODE}/send`,{method:"POST",body:fd});
+    if(r.ok){const m=await r.json();render(m);if(m.id>lastId)lastId=m.id}
+    pendingImageFile=null;imgInput.value="";imgPreviewWrap.classList.add("hidden");
+  }finally{mi.disabled=false;mi.focus()}
+});
+</script>
+{% endblock %}

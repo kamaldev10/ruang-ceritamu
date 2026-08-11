@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Forum — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="max-w-3xl mx-auto px-margin-mobile md:px-margin-desktop py-10">
+  <div class="text-center mb-8"><h1 class="font-heading text-4xl font-bold text-primary mb-2">Ruang Cerita Anonim</h1><p class="text-on-surface-variant">Tumpahkan perasaanmu. Suaramu didengar tanpa penghakiman.</p></div>
+
+  <!-- Search + Filter -->
+  <div class="flex flex-wrap gap-2 mb-6">
+    <a href="{{ url_for('forum.feed', sort='latest') }}" class="px-4 py-2 rounded-full text-sm font-bold {{ 'bg-primary text-white' if sort == 'latest' else 'bg-white border border-gray-200 text-on-surface-variant' }}">Terbaru</a>
+    <a href="{{ url_for('forum.feed', sort='popular') }}" class="px-4 py-2 rounded-full text-sm font-bold {{ 'bg-primary text-white' if sort == 'popular' else 'bg-white border border-gray-200 text-on-surface-variant' }}">Populer</a>
+    {% if tag %}<a href="{{ url_for('forum.feed') }}" class="px-4 py-2 rounded-full text-sm font-bold bg-accent text-primary">#{{ tag }} ×</a>{% endif %}
+    <form class="ml-auto flex gap-2">
+      <div class="relative"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[18px]">search</span>
+      <input name="q" value="{{ search }}" placeholder="Cari cerita..." class="pl-10 pr-4 py-2 rounded-full border border-gray-200 text-sm outline-none w-44 focus:w-56 transition-all focus:border-primary"/></div>
+    </form>
+    {% if current_user.is_authenticated %}<a href="{{ url_for('forum.new_post') }}" class="bg-primary text-white px-5 py-2 rounded-full text-sm font-bold flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">edit_square</span>Tulis</a>{% endif %}
+  </div>
+
+  {% if search %}<p class="text-sm text-on-surface-variant mb-4">Hasil pencarian untuk "<strong class="text-primary">{{ search }}</strong>" — {{ pagination.total }} hasil</p>{% endif %}
+
+  {% for p in posts %}
+  <article class="bg-white border border-gray-100 rounded-custom p-6 ambient-shadow hover:border-primary/20 transition-colors mb-5">
+    <div class="flex items-center gap-3 mb-3">
+      {% if p.mood_tag %}<a href="{{ url_for('forum.feed', tag=p.mood_tag) }}" class="bg-accent text-primary px-3 py-1 rounded-full text-xs font-bold">#{{ p.mood_tag }}</a>{% endif %}
+      <span class="text-xs text-on-surface-variant">{{ time_ago(p.created_at) }}{% if p.pseudonym %} · <strong class="text-primary">{{ p.pseudonym }}</strong>{% endif %}</span>
+    </div>
+    <a href="{{ url_for('forum.detail', post_id=p.id) }}"><h2 class="font-heading text-xl font-bold text-primary mb-2 hover:underline">{{ p.title }}</h2><p class="text-on-surface-variant text-sm line-clamp-3 mb-4">{{ p.content }}</p></a>
+    <div class="flex items-center gap-5 pt-4 border-t border-gray-100 text-sm">
+      <span class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined text-error">favorite</span><strong>{{ p.likes_count or 0 }}</strong></span>
+      <span class="flex items-center gap-2 text-on-surface-variant"><span class="material-symbols-outlined">chat_bubble</span><strong>{{ p.comments.count() }}</strong></span>
+      <a href="{{ url_for('forum.detail', post_id=p.id) }}" class="ml-auto text-primary font-bold hover:underline">Baca</a>
+    </div>
+  </article>
+  {% else %}
+  <div class="bg-white rounded-custom p-12 text-center ambient-shadow"><p class="text-on-surface-variant mb-4">{% if search %}Tidak ditemukan cerita dengan kata kunci tersebut.{% else %}Belum ada cerita.{% endif %}</p>
+    <a href="{{ url_for('forum.new_post') if current_user.is_authenticated else url_for('auth.login') }}" class="inline-flex bg-primary text-white px-6 py-3 rounded-full font-bold text-sm">{% if search %}Tulis ceritamu{% else %}Jadi yang pertama{% endif %}</a>
+  </div>
+  {% endfor %}
+
+  {% if pagination.pages > 1 %}
+  <div class="flex justify-center gap-2 mt-8">
+    {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if p %}<a href="{{ url_for('forum.feed', page=p, sort=sort, tag=tag, q=search) }}" class="px-4 py-2 rounded-full text-sm font-bold {{ 'bg-primary text-white' if p == pagination.page else 'bg-white border border-gray-200' }}">{{ p }}</a>
+      {% else %}<span class="px-2 text-gray-400">…</span>{% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

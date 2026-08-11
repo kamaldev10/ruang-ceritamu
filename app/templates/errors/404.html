@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Halaman Tidak Ditemukan — {{ app_name }}{% endblock %}
+{% block content %}
+<section class="min-h-[calc(100vh-200px)] flex items-center justify-center px-margin-mobile py-12">
+  <div class="text-center max-w-md">
+    <div class="font-heading text-8xl md:text-9xl font-bold text-primary mb-2">404</div>
+    <h1 class="font-heading text-2xl font-bold text-primary mb-3">Halaman Tidak Ditemukan</h1>
+    <p class="text-on-surface-variant text-sm mb-8">Halaman yang kamu cari tidak ada.</p>
+    <a href="{{ url_for('main.index') }}" class="inline-flex bg-primary text-white px-6 py-3 rounded-full font-bold text-sm">Kembali ke Beranda</a>
+  </div>
+</section>
+{% endblock %}

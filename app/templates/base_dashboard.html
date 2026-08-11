@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>{% block title %}Dashboard — {{ app_name }}{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%23C8F31D'/><text x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-size='18'>💚</text></svg>">
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  {% include "components/_design_tokens.html" %}
+
+  <style>
+    body { background-color: #f8fafc; font-family: 'Inter', sans-serif; color: #1e293b; -webkit-font-smoothing: antialiased; }
+
+    /* Smooth scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+    /* Toast Notifications */
+    .toast-enter { animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes toastIn { from { opacity: 0; transform: translateX(100%); } to { opacity: 1; transform: translateX(0); } }
+    
+    /* Sidebar Links */
+    .sidebar-link {
+      display: flex; align-items: center; gap: 0.875rem; padding: 0.75rem 1rem;
+      border-radius: 0.75rem; font-size: 0.875rem; font-weight: 500;
+      color: rgba(255, 255, 255, 0.6); transition: all 0.2s ease-in-out;
+      margin-bottom: 0.25rem;
+    }
+    .sidebar-link:hover { background: rgba(255, 255, 255, 0.08); color: white; transform: translateX(4px); }
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(200, 243, 29, 0.15) 0%, rgba(200, 243, 29, 0.05) 100%);
+      color: #C8F31D; font-weight: 600;
+      border-left: 3px solid #C8F31D;
+    }
+    
+    .sidebar-section {
+      font-family: 'Be Vietnam Pro', sans-serif; font-size: 0.65rem; text-transform: uppercase;
+      letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.3); font-weight: 700;
+      padding: 0 1rem; margin-top: 1.75rem; margin-bottom: 0.75rem;
+    }
+
+    /* Enterprise Data Table overrides */
+    .enterprise-table th { background-color: #f8fafc; font-weight: 600; color: #475569; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.05em; padding-top: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #e2e8f0; }
+    .enterprise-table td { padding-top: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    .enterprise-table tr:hover td { background-color: #f8fafc; }
+  </style>
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="text-slate-800 antialiased selection:bg-brand-900 selection:text-white">
+  <div class="flex min-h-screen">
+    
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-[260px] bg-brand-900 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col shadow-2xl lg:shadow-none">
+      <div class="px-6 py-7 flex items-center gap-3 border-b border-white/5">
+        <div class="w-10 h-10 bg-accent rounded-xl flex items-center justify-center shadow-glow">
+          <span class="material-symbols-outlined text-brand-900 font-bold">bubble_chart</span>
+        </div>
+        <span class="font-heading text-xl font-extrabold text-white tracking-tight">{{ app_name }}</span>
+      </div>
+      
+      <nav class="flex-1 px-4 py-6 overflow-y-auto">
+        {% if current_user.is_admin %}
+          <div class="sidebar-section">Overview</div>
+          <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.dashboard' }}">
+            <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
+          </a>
+          
+          <div class="sidebar-section">Management</div>
+          <a href="{{ url_for('admin.users') }}" class="sidebar-link {{ 'active' if 'admin.users' in request.endpoint or 'admin.new_psikolog' in request.endpoint or 'admin.verify' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Users
+          </a>
+          <a href="{{ url_for('admin.sessions') }}" class="sidebar-link {{ 'active' if 'admin.session' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">forum</span>Chat Sessions
+          </a>
+          <a href="{{ url_for('admin.forum_mod') }}" class="sidebar-link {{ 'active' if 'admin.forum' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">gavel</span>Moderation
+          </a>
+          <a href="{{ url_for('admin.reports') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.reports' }}">
+            <span class="material-symbols-outlined text-[20px]">flag</span>Reports
+          </a>
+          
+          <div class="sidebar-section">Content</div>
+          <a href="{{ url_for('admin.marquee') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.marquee' }}">
+            <span class="material-symbols-outlined text-[20px]">directions_run</span>Marquee Landing
+          </a>
+
+          <div class="sidebar-section">System</div>
+          <a href="{{ url_for('admin.logs') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.logs' }}">
+            <span class="material-symbols-outlined text-[20px]">manage_search</span>Audit Log
+          </a>
+
+        {% elif current_user.is_psikolog %}
+          <div class="sidebar-section">Counselor Space</div>
+          <a href="{{ url_for('psikolog.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.dashboard' }}">
+            <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
+          </a>
+          <a href="{{ url_for('psikolog.profile') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.profile' }}">
+            <span class="material-symbols-outlined text-[20px]">badge</span>Profile
+          </a>
+          <a href="{{ url_for('psikolog.settings') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.settings' }}">
+            <span class="material-symbols-outlined text-[20px]">settings</span>Settings
+          </a>
+          <div class="sidebar-section">Community</div>
+          <a href="{{ url_for('forum.feed') }}" class="sidebar-link {{ 'active' if 'forum' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">public</span>Forum
+          </a>
+          
+        {% else %}
+          <div class="sidebar-section">Menu</div>
+          <a href="{{ url_for('user.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.dashboard' }}">
+            <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
+          </a>
+          <a href="{{ url_for('chat.pilih') }}" class="sidebar-link {{ 'active' if 'chat' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">chat_bubble</span>Start Session
+          </a>
+          <a href="{{ url_for('mood.tracker') }}" class="sidebar-link {{ 'active' if 'mood' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">mood</span>Mood Tracker
+          </a>
+          <div class="sidebar-section">Community</div>
+          <a href="{{ url_for('forum.feed') }}" class="sidebar-link {{ 'active' if 'forum' in request.endpoint }}">
+            <span class="material-symbols-outlined text-[20px]">public</span>Forum
+          </a>
+          <div class="sidebar-section">Account</div>
+          <a href="{{ url_for('user.settings') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.settings' }}">
+            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Settings
+          </a>
+        {% endif %}
+      </nav>
+      
+      <div class="px-4 py-4 border-t border-white/5 space-y-1 bg-black/10">
+        <a href="{{ url_for('main.emergency') }}" class="sidebar-link hover:bg-red-500/20 text-red-300 hover:text-red-200">
+          <span class="material-symbols-outlined text-[20px]">emergency</span>Emergency
+        </a>
+        <a href="{{ url_for('auth.logout') }}" class="sidebar-link hover:bg-white/10 text-slate-400">
+          <span class="material-symbols-outlined text-[20px]">logout</span>Sign Out
+        </a>
+      </div>
+    </aside>
+    
+    <!-- Mobile Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-30 hidden lg:hidden transition-opacity" onclick="toggleSidebar()"></div>
+
+    <!-- MAIN CONTENT -->
+    <div class="flex-1 lg:ml-[260px] flex flex-col min-h-screen relative overflow-x-hidden">
+      
+      <!-- TOP HEADER -->
+      <header class="sticky top-0 z-20 bg-white/70 backdrop-blur-xl border-b border-slate-200/60 px-4 lg:px-10 py-4 flex items-center justify-between transition-all">
+        <div class="flex items-center gap-4">
+          <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors">
+            <span class="material-symbols-outlined">menu_open</span>
+          </button>
+          <div>
+            <h1 class="font-heading text-2xl font-bold text-slate-900 leading-tight tracking-tight">{% block page_title %}Dashboard{% endblock %}</h1>
+            <p class="text-sm text-slate-500 font-medium">{% block page_subtitle %}{% endblock %}</p>
+          </div>
+        </div>
+        
+        <div class="flex items-center gap-5">
+          <!-- Notification Bell -->
+          <a href="{{ url_for('notif.index') }}" class="relative w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center hover:bg-slate-200 transition-colors text-slate-600 shadow-sm">
+            <span class="material-symbols-outlined text-[20px]">notifications</span>
+            {% if notif_count > 0 %}
+            <span class="absolute top-0 right-0 w-4 h-4 bg-red-500 border-2 border-white text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">{{ notif_count }}</span>
+            {% endif %}
+          </a>
+          
+          <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
+          
+          <!-- User Profile -->
+          <div class="flex items-center gap-3 cursor-pointer group">
+            <div class="hidden sm:block text-right">
+              <div class="text-sm font-semibold text-slate-900 group-hover:text-brand-700 transition-colors">{{ current_user.full_name or current_user.username }}</div>
+              <div class="text-xs text-slate-500 font-medium capitalize">{{ current_user.role }}</div>
+            </div>
+            {% if current_user.display_avatar %}
+              <img src="{{ current_user.display_avatar }}" class="w-10 h-10 rounded-full object-cover shadow-sm ring-2 ring-transparent group-hover:ring-brand-200 transition-all"/>
+            {% else %}
+              <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center font-bold font-heading shadow-sm ring-2 ring-transparent group-hover:ring-brand-200 transition-all">{{ current_user.username[0]|upper }}</div>
+            {% endif %}
+          </div>
+        </div>
+      </header>
+
+      <!-- FLASH MESSAGES (Toast) -->
+      <div id="toast-container" class="fixed top-20 right-4 lg:right-10 z-50 flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for cat, msg in messages %}
+            <div class="toast-enter pointer-events-auto bg-white rounded-xl shadow-float border border-slate-100 p-4 flex items-start gap-3 relative overflow-hidden">
+              <div class="absolute left-0 top-0 bottom-0 w-1 {{ 'bg-green-500' if cat == 'success' else ('bg-red-500' if cat == 'error' else 'bg-blue-500') }}"></div>
+              <span class="material-symbols-outlined mt-0.5 {{ 'text-green-500' if cat == 'success' else ('text-red-500' if cat == 'error' else 'text-blue-500') }}">
+                {{ 'check_circle' if cat == 'success' else ('error' if cat == 'error' else 'info') }}
+              </span>
+              <div class="flex-1">
+                <p class="text-sm font-semibold text-slate-800">{{ cat|title }}</p>
+                <p class="text-sm text-slate-500 mt-0.5 leading-snug">{{ msg }}</p>
+              </div>
+              <button onclick="this.closest('.toast-enter').remove()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+              </button>
+            </div>
+            {% endfor %}
+            <script>
+              setTimeout(() => {
+                document.querySelectorAll('.toast-enter').forEach(el => {
+                  el.style.opacity = '0';
+                  el.style.transform = 'translateX(10px)';
+                  el.style.transition = 'all 0.3s ease';
+                  setTimeout(() => el.remove(), 300);
+                });
+              }, 5000);
+            </script>
+          {% endif %}
+        {% endwith %}
+      </div>
+
+      <!-- MAIN PAGE CONTENT -->
+      <main class="flex-1 px-4 lg:px-10 py-8 max-w-7xl w-full mx-auto animate-fade-in">
+        {% block content %}{% endblock %}
+      </main>
+
+      <!-- FOOTER -->
+      <footer class="px-4 lg:px-10 py-6 mt-auto border-t border-slate-200/60 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <span class="font-medium">© {{ current_year }} {{ app_name }}</span>
+        <span class="flex items-center gap-1 font-medium bg-slate-100 px-3 py-1 rounded-full text-slate-600">Kamu tidak sendirian <span class="text-green-500">💚</span></span>
+      </footer>
+      
+    </div>
+  </div>
+
+  <script>
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+      sidebar.classList.toggle('-translate-x-full');
+      overlay.classList.toggle('hidden');
+    }
+  </script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
