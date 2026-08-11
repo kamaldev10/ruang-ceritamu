@@ -8,7 +8,7 @@
     <h1 class="font-heading text-3xl font-bold text-primary mb-5">{{ post.title }}</h1>
     <div class="text-on-surface-variant leading-relaxed whitespace-pre-line">{{ post.content }}</div>
     <div class="flex items-center gap-4 pt-6 mt-6 border-t border-gray-100">
-      <button onclick="likePost({{ post.id }})" class="flex items-center gap-2 bg-error-container px-4 py-2 rounded-full text-error text-sm font-bold"><span class="material-symbols-outlined text-[18px]">favorite</span><span id="lc">{{ post.likes_count or 0 }}</span></button>
+      <button onclick="likePost({{ post.id }})" aria-label="Sukai cerita ini" class="flex items-center gap-2 bg-error-container px-4 py-2 rounded-full text-error text-sm font-bold"><span class="material-symbols-outlined text-[18px]">favorite</span><span id="lc">{{ post.likes_count or 0 }}</span></button>
       {% if current_user.is_authenticated %}<a href="{{ url_for('forum.report_post', post_id=post.id) }}" class="ml-auto text-sm text-on-surface-variant hover:text-error flex items-center gap-1"><span class="material-symbols-outlined text-[18px]">flag</span>Laporkan</a>{% endif %}
     </div>
   </article>

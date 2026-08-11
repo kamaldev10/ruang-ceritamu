@@ -72,7 +72,7 @@
               </div>
             </div>
             {% if s.status != 'ended' %}
-            <a href="{{ url_for('chat.room', code=s.session_code) }}" class="shrink-0 w-8 h-8 rounded-lg bg-white border border-slate-200 hover:border-brand-300 hover:bg-brand-50 flex items-center justify-center text-brand-600 shadow-sm transition-all group-hover:shadow">
+            <a href="{{ url_for('chat.room', code=s.session_code) }}" aria-label="Buka sesi {{ s.session_code }}" class="shrink-0 w-8 h-8 rounded-lg bg-white border border-slate-200 hover:border-brand-300 hover:bg-brand-50 flex items-center justify-center text-brand-600 shadow-sm transition-all group-hover:shadow">
               <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
             </a>
             {% endif %}

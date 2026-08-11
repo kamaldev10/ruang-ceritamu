@@ -40,7 +40,7 @@
       <div class="flex items-center gap-6 mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
         <div class="relative group">
           {% if current_user.display_avatar %}
-            <img src="{{ current_user.display_avatar }}" class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md transition-transform group-hover:scale-105"/>
+            <img src="{{ current_user.display_avatar }}" alt="Foto profil Anda" class="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md transition-transform group-hover:scale-105"/>
           {% else %}
             <div class="w-24 h-24 rounded-2xl bg-brand-900 text-white flex items-center justify-center text-4xl font-extrabold border-4 border-white shadow-md transition-transform group-hover:scale-105">
               {{ current_user.username[0]|upper }}

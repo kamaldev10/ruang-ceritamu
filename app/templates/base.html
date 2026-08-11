@@ -26,7 +26,7 @@
     {% for cat, msg in messages %}
     <div class="flash-{{ cat }} border px-4 py-3 rounded-xl text-sm font-medium ambient-shadow flex items-start gap-3">
       <span class="flex-1">{{ msg }}</span>
-      <button onclick="this.parentElement.remove()" class="opacity-50 hover:opacity-100"><span class="material-symbols-outlined text-[16px]">close</span></button>
+      <button onclick="this.parentElement.remove()" aria-label="Tutup notifikasi" class="opacity-50 hover:opacity-100"><span class="material-symbols-outlined text-[16px]">close</span></button>
     </div>
     {% endfor %}
   </div>

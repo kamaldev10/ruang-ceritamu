@@ -80,7 +80,7 @@
       <div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center {{ 'bg-primary text-white' if m.sender_role == 'user' else 'bg-accent text-primary' }}"><span class="material-symbols-outlined text-[16px]">{{ 'person' if m.sender_role == 'user' else 'support_agent' }}</span></div>
       <div class="p-2.5 rounded-2xl {{ 'bg-primary text-white rounded-br-none' if is_self else 'bg-white border border-gray-100 rounded-bl-none' }} {{ 'ring-2 ring-error' if m.is_crisis else '' }} shadow-sm">
         {% if m.image_filename %}
-        <img src="/static/chat_uploads/{{ m.image_filename }}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>
+        <img src="/static/chat_uploads/{{ m.image_filename }}" alt="Gambar dari {{ 'pendengar' if m.sender_role == 'psikolog' else 'user' }}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>
         {% endif %}
         {% if m.content and m.content != '[gambar]' %}<p class="text-sm whitespace-pre-wrap break-words">{{ m.content }}</p>{% endif %}
         <span class="flex items-center justify-end gap-1 text-[10px] {{ 'text-white/60' if is_self else 'text-gray-400' }} mt-1">
@@ -99,16 +99,16 @@
 
   {% if sess.status != 'ended' %}
   <div id="image-preview-wrap" class="hidden bg-white border border-gray-100 rounded-2xl p-3 mb-2 ambient-shadow flex items-center gap-3">
-    <img id="image-preview" class="w-14 h-14 rounded-lg object-cover"/>
+    <img id="image-preview" alt="Pratinjau gambar yang akan dikirim" class="w-14 h-14 rounded-lg object-cover"/>
     <span class="flex-1 text-xs text-on-surface-variant">Gambar siap dikirim</span>
-    <button type="button" id="image-remove" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500"><span class="material-symbols-outlined text-[18px]">close</span></button>
+    <button type="button" id="image-remove" aria-label="Batalkan gambar" class="w-8 h-8 rounded-full bg-gray-50 hover:bg-gray-100 flex items-center justify-center text-gray-500"><span class="material-symbols-outlined text-[18px]">close</span></button>
   </div>
   <form id="msg-form" class="bg-white border border-gray-100 rounded-2xl p-3 ambient-shadow flex items-center gap-2">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="file" id="image-input" name="image" accept="image/png,image/jpeg" class="hidden"/>
-    <button type="button" id="attach-btn" class="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-primary hover:bg-gray-50"><span class="material-symbols-outlined">attach_file</span></button>
-    <input id="msg-input" name="content" type="text" maxlength="2000" placeholder="Ceritakan perasaanmu..." class="flex-1 bg-gray-50 border-none rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none"/>
-    <button type="submit" class="w-12 h-12 shrink-0 bg-primary text-white rounded-full flex items-center justify-center hover:bg-opacity-90 active:scale-95"><span class="material-symbols-outlined">send</span></button>
+    <button type="button" id="attach-btn" aria-label="Lampirkan gambar" class="w-11 h-11 shrink-0 rounded-full flex items-center justify-center text-primary hover:bg-gray-50"><span class="material-symbols-outlined">attach_file</span></button>
+    <input id="msg-input" name="content" type="text" maxlength="2000" placeholder="Ceritakan perasaanmu..." aria-label="Tulis pesan" class="flex-1 bg-gray-50 border-none rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-primary/20 outline-none"/>
+    <button type="submit" aria-label="Kirim pesan" class="w-12 h-12 shrink-0 bg-primary text-white rounded-full flex items-center justify-center hover:bg-opacity-90 active:scale-95"><span class="material-symbols-outlined">send</span></button>
   </form>
   {% else %}
   <div class="bg-gray-100 rounded-2xl p-6 text-center text-on-surface-variant text-sm">Sesi sudah berakhir 💚</div>
@@ -147,7 +147,7 @@ function render(m){
         bb=self?'bg-primary text-white rounded-br-none':'bg-white border border-gray-100 rounded-bl-none',
         tc=self?'text-white/60':'text-gray-400',ic=m.sender_role==='user'?'person':'support_agent',
         cr=m.is_crisis?' ring-2 ring-error':'',
-        img=m.image?`<img src="${m.image}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>`:'',
+        img=m.image?`<img src="${m.image}" alt="Gambar dari ${m.sender_role==='psikolog'?'pendengar':'user'}" class="rounded-lg max-w-[220px] max-h-[220px] object-cover mb-1"/>`:'',
         cap=(m.content&&m.content!=='[gambar]')?`<p class="text-sm whitespace-pre-wrap break-words">${esc(m.content)}</p>`:'',
         tick=self?`<span class="material-symbols-outlined tick ${m.is_read?'read':''}">${m.is_read?'done_all':'done'}</span>`:'';
   w.innerHTML=`<div class="w-8 h-8 rounded-full shrink-0 flex items-center justify-center ${ab}"><span class="material-symbols-outlined text-[16px]">${ic}</span></div><div class="p-2.5 rounded-2xl ${bb}${cr} shadow-sm">${img}${cap}<span class="flex items-center justify-end gap-1 text-[10px] ${tc} mt-1">${m.sent_at}${tick}</span></div>`;
