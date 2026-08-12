@@ -5,7 +5,7 @@
       <div class="font-heading text-xl font-bold text-primary tracking-tight">{{ app_name }}</div>
     </a>
     <nav class="hidden lg:flex items-center gap-10">
-      <a class="{{ 'text-primary font-bold' if request.endpoint == 'main.index' else 'text-on-surface-variant font-medium' }} text-[14px] hover:text-accent transition-colors" href="{{ url_for('main.index') }}">Beranda</a>
+      <a class="{{ 'text-primary font-bold' if request.endpoint == 'main.index' else 'text-on-surface-variant font-medium' }} text-[14px] hover:text-primary transition-colors" href="{{ url_for('main.index') }}">Beranda</a>
       <a class="{{ 'text-primary font-bold' if request.endpoint and request.endpoint.startswith('forum.') else 'text-on-surface-variant font-medium' }} text-[14px] hover:text-primary transition-colors" href="{{ url_for('forum.feed') }}">Forum</a>
       <a class="{{ 'text-primary font-bold' if request.endpoint == 'main.about' else 'text-on-surface-variant font-medium' }} text-[14px] hover:text-primary transition-colors" href="{{ url_for('main.about') }}">Tentang Kami</a>
       <a class="{{ 'text-primary font-bold' if request.endpoint == 'main.emergency' else 'text-on-surface-variant font-medium' }} text-[14px] hover:text-primary transition-colors" href="{{ url_for('main.emergency') }}">Darurat</a>
