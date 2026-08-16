@@ -1,4 +1,4 @@
-# Agent Instructions - CeritaKita
+# Agent Instructions - RuangCeritamu
 
 ## Architecture & Entrypoints
 - **Framework:** Flask (v3.0) + MySQL (via SQLAlchemy & PyMySQL).

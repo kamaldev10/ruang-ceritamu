@@ -1,4 +1,4 @@
-"""Flask application factory CeritaKita."""
+"""Flask application factory RuangCeritamu."""
 import os
 import logging
 from logging.handlers import RotatingFileHandler
@@ -80,7 +80,7 @@ def create_app(config_name=None):
             notif_count = current_user.unread_notif_count
         return {
             "current_year": datetime.now().year,
-            "app_name": "CeritaKita",
+            "app_name": "RuangCeritamu",
             "notif_count": notif_count,
         }
 
@@ -97,4 +97,4 @@ def _setup_logging(app):
     fh.setLevel(logging.INFO)
     app.logger.addHandler(fh)
     app.logger.setLevel(logging.INFO)
-    app.logger.info("CeritaKita startup")
+    app.logger.info("RuangCeritamu startup")

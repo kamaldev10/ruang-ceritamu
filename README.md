@@ -1,4 +1,4 @@
-# CeritaKita 💚
+# RuangCeritamu 💚
 
 Platform curhat anonim gratis untuk anak muda Indonesia. Flask + MySQL.
 
@@ -124,7 +124,7 @@ ceritakita/
 
 ## ⚖️ Disclaimer
 
-CeritaKita bukan terapi profesional. Untuk krisis: **119 ext. 8** · [intothelightid.org](https://www.intothelightid.org)
+RuangCeritamu bukan terapi profesional. Untuk krisis: **119 ext. 8** · [intothelightid.org](https://www.intothelightid.org)
 
 ---
 Dibangun dengan 💚 untuk anak muda Indonesia.

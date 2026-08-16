@@ -2,7 +2,7 @@
   "name": "ceritakita",
   "private": true,
   "version": "1.0.0",
-  "description": "Build assets (Tailwind CSS) untuk CeritaKita",
+  "description": "Build assets (Tailwind CSS) untuk RuangCeritamu",
   "scripts": {
     "build:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/tailwind.css --minify",
     "watch:css": "tailwindcss -i ./app/static/css/input.css -o ./app/static/css/tailwind.css --watch"

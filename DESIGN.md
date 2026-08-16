@@ -1,14 +1,14 @@
-# DESIGN.md — CeritaKita Technical Design Document
+# DESIGN.md — RuangCeritamu Technical Design Document
 
-> Dokumen ini menjelaskan arsitektur, desain sistem, skema database, user flow, design system visual, dan keputusan teknis aplikasi CeritaKita secara menyeluruh.
+> Dokumen ini menjelaskan arsitektur, desain sistem, skema database, user flow, design system visual, dan keputusan teknis aplikasi RuangCeritamu secara menyeluruh.
 
 ---
 
 ## 1. Ringkasan Proyek
 
-**CeritaKita** adalah platform peer-support (dukungan sebaya) berbasis web yang menyediakan ruang curhat anonim gratis untuk anak muda Indonesia. Platform ini menghubungkan user yang membutuhkan tempat bercerita dengan pembimbing pendengar terlatih melalui chat 1:1 anonim, forum cerita publik, dan mood tracker harian.
+**RuangCeritamu** adalah platform peer-support (dukungan sebaya) berbasis web yang menyediakan ruang curhat anonim gratis untuk anak muda Indonesia. Platform ini menghubungkan user yang membutuhkan tempat bercerita dengan pembimbing pendengar terlatih melalui chat 1:1 anonim, forum cerita publik, dan mood tracker harian.
 
-**Penegasan penting:** CeritaKita **bukan layanan terapi profesional**. Pendengar adalah pembimbing terlatih dasar, bukan psikolog/psikiater berlisensi. Untuk krisis serius, platform mengarahkan user ke hotline resmi (119 ext. 8).
+**Penegasan penting:** RuangCeritamu **bukan layanan terapi profesional**. Pendengar adalah pembimbing terlatih dasar, bukan psikolog/psikiater berlisensi. Untuk krisis serius, platform mengarahkan user ke hotline resmi (119 ext. 8).
 
 ### 1.1 Tech Stack
 

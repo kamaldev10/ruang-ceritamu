@@ -1,5 +1,5 @@
 """
-Konfigurasi database CeritaKita.
+Konfigurasi database RuangCeritamu.
 
 Baca kredensial dari .env (lihat .env.example). Kalau .env tidak ada atau
 variabelnya tidak diset, fallback ke default Laragon (user 'root', password

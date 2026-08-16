@@ -23,7 +23,7 @@ def _send_or_log(msg, link):
 def send_reset_email(user):
     token = user.get_reset_token()
     link = url_for('auth.reset_token', token=token, _external=True)
-    msg = Message('Permintaan Reset Kata Sandi - CeritaKita',
+    msg = Message('Permintaan Reset Kata Sandi - RuangCeritamu',
                   recipients=[user.email])
     msg.body = f'''Untuk me-reset kata sandi Anda, kunjungi tautan berikut:
 {link}

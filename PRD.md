@@ -1,14 +1,14 @@
 # PRD — Product Requirements Document
 
-## CeritaKita: Platform Curhat Anonim untuk Anak Muda Indonesia
+## RuangCeritamu: Platform Curhat Anonim untuk Anak Muda Indonesia
 
 | Field | Detail |
 |-------|--------|
-| **Nama Produk** | CeritaKita |
+| **Nama Produk** | RuangCeritamu |
 | **Versi Dokumen** | 2.0 |
 | **Status** | In Development |
 | **Tanggal** | 2025 |
-| **Author** | Tim Pengembang CeritaKita |
+| **Author** | Tim Pengembang RuangCeritamu |
 | **Stakeholder** | Product Owner, Backend Engineer, Frontend Engineer, UI/UX Designer |
 
 ---
@@ -21,11 +21,11 @@ Kesehatan mental anak muda Indonesia berada di titik kritis. Data Kemenkes RI me
 
 ### 1.2 Solusi yang Ditawarkan
 
-CeritaKita adalah platform peer-support (dukungan sebaya) berbasis web yang menyediakan ruang curhat anonim gratis untuk anak muda Indonesia. Platform ini menghubungkan user yang membutuhkan tempat bercerita dengan relawan pendengar terlatih melalui tiga kanal utama: chat 1:1 anonim dengan matchmaking acak, forum cerita publik dengan nama samaran, dan mood tracker harian untuk self-awareness.
+RuangCeritamu adalah platform peer-support (dukungan sebaya) berbasis web yang menyediakan ruang curhat anonim gratis untuk anak muda Indonesia. Platform ini menghubungkan user yang membutuhkan tempat bercerita dengan relawan pendengar terlatih melalui tiga kanal utama: chat 1:1 anonim dengan matchmaking acak, forum cerita publik dengan nama samaran, dan mood tracker harian untuk self-awareness.
 
 ### 1.3 Penegasan Batasan
 
-CeritaKita **bukan layanan terapi profesional**. Pendengar adalah relawan terlatih dasar yang dilatih untuk mendengarkan dengan empati, bukan untuk mendiagnosis atau memberikan treatment. Untuk situasi krisis, platform menyediakan mekanisme eskalasi otomatis ke hotline profesional (119 ext. 8).
+RuangCeritamu **bukan layanan terapi profesional**. Pendengar adalah relawan terlatih dasar yang dilatih untuk mendengarkan dengan empati, bukan untuk mendiagnosis atau memberikan treatment. Untuk situasi krisis, platform menyediakan mekanisme eskalasi otomatis ke hotline profesional (119 ext. 8).
 
 ### 1.4 Metrik Keberhasilan
 
@@ -74,7 +74,7 @@ CeritaKita **bukan layanan terapi profesional**. Pendengar adalah relawan terlat
 | Atribut | Detail |
 |---------|--------|
 | **Usia** | 28 tahun |
-| **Pekerjaan** | Founder/coordinator CeritaKita |
+| **Pekerjaan** | Founder/coordinator RuangCeritamu |
 | **Kebutuhan** | Visibility penuh atas platform: siapa online, sesi mana yang bermasalah, konten mana yang dilaporkan. Kemampuan intervensi cepat (ban user, tutup sesi, hide konten). Data untuk laporan ke donor/partner. |
 | **Frustrasi** | Kalau ada krisis tapi tidak tahu sampai terlambat. Relawan yang tidak mengikuti kode etik. Konten trolling yang merusak safe space. |
 | **Quote** | "Satu insiden krisis yang tidak tertangani bisa menghancurkan kepercayaan seluruh komunitas." |

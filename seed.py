@@ -1,5 +1,5 @@
 """
-Seed script CeritaKita.
+Seed script RuangCeritamu.
 Jalankan: python seed.py
 Database dibuat otomatis.
 """

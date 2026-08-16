@@ -1,5 +1,5 @@
 /**
- * Service worker CeritaKita — sengaja MINIMAL.
+ * Service worker RuangCeritamu — sengaja MINIMAL.
  *
  * App ini dinamis (session/login-based) dan sekarang punya chat real-time
  * lewat WebSocket, jadi TIDAK cache halaman HTML atau respons API — cache

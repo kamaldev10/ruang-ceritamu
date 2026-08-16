@@ -1,5 +1,5 @@
 """
-Entry point CeritaKita.
+Entry point RuangCeritamu.
 Jalankan: python run.py
 """
 # Monkey-patch HARUS paling awal, sebelum import lain (termasuk db driver) —

@@ -1,4 +1,4 @@
-"""Forms WTForms CeritaKita."""
+"""Forms WTForms RuangCeritamu."""
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
 from wtforms import (StringField, PasswordField, TextAreaField, BooleanField,

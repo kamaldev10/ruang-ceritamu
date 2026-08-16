@@ -1,4 +1,4 @@
-"""Helper functions CeritaKita."""
+"""Helper functions RuangCeritamu."""
 import os
 import random
 import string

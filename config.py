@@ -1,4 +1,4 @@
-"""Konfigurasi multi-environment CeritaKita."""
+"""Konfigurasi multi-environment RuangCeritamu."""
 import os
 from dotenv import load_dotenv
 from sqlalchemy.pool import StaticPool
