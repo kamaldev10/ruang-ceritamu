@@ -27,3 +27,6 @@ Thumbs.db
 
 # Node (Tailwind build)
 node_modules/
+
+# Pytest
+.pytest_cache/

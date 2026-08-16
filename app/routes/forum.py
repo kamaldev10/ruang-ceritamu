@@ -3,7 +3,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from sqlalchemy import desc
 from app.extensions import db
-from app.models import ForumPost, ForumComment, Report
+from app.models import ForumPost, ForumComment, Report, User, Role
 from app.forms import ForumPostForm, CommentForm, ReportForm
 from app.utils import time_ago, send_notification
 
@@ -91,6 +91,10 @@ def report_post(post_id):
         report = Report(reporter_id=current_user.id, target_type="post",
                         target_id=post.id, reason=form.reason.data.strip())
         db.session.add(report)
+        for admin in User.query.filter_by(role=Role.ADMIN.value).all():
+            send_notification(admin.id, "Laporan baru",
+                              f"Cerita \"{post.title[:50]}\" dilaporkan.",
+                              link=url_for("admin.reports"), notif_type="info")
         db.session.commit()
         flash("Laporan terkirim.", "success")
         return redirect(url_for("forum.detail", post_id=post.id))

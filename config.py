@@ -1,6 +1,7 @@
 """Konfigurasi multi-environment CeritaKita."""
 import os
 from dotenv import load_dotenv
+from sqlalchemy.pool import StaticPool
 from db import get_database_uri
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -55,9 +56,16 @@ class ProductionConfig(Config):
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
-    SQLALCHEMY_ENGINE_OPTIONS = {}
+    # StaticPool + check_same_thread=False: satu koneksi SQLite in-memory yang
+    # sama dipakai ulang untuk semua request test, supaya tabel yang dibuat di
+    # awal test tidak "hilang" ketika SQLAlchemy membuka koneksi baru.
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        "poolclass": StaticPool,
+        "connect_args": {"check_same_thread": False},
+    }
     WTF_CSRF_ENABLED = False
     MAIL_SUPPRESS_SEND = True
+    RATELIMIT_ENABLED = False
 
 
 config_map = {
