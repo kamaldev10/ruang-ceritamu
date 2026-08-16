@@ -30,7 +30,13 @@
 - **Database Setup:** Uses Laragon/MySQL defaults (root, no password) unless overridden in `.env`.
 - **Crisis Detection:** Logic in `app/utils.py` monitors for 30+ keywords and triggers admin notifications.
 - **Authentication:** Combined login/register routes in `app/routes/auth.py`.
-- **Testing:** No specialized test suite found in root. Use `TestingConfig` in `config.py` for manual test scripts.
+- **Testing:** `tests/` has a pytest suite (auth, role-gated routes, chat-session
+  access control, crisis detection, forum notifications) using `TestingConfig`
+  (SQLite in-memory, no MySQL needed). Run with `pytest` from repo root after
+  `pip install -r requirements-dev.txt`. Runs in CI via
+  `.github/workflows/tests.yml` on push/PR. Extend this suite when touching
+  authorization logic — most of it is manual per-route checks, easy to regress
+  silently.
 - **Real-time chat:** Flask-SocketIO + gevent (see DESIGN.md §6.5). `run.py`/`wsgi.py`
   both start with `from gevent import monkey; monkey.patch_all()` — this MUST stay
   the very first thing executed, before any other import. Dev server uses
@@ -41,6 +47,13 @@
   long-polling — no WebSocket support in waitress itself.
 
 ## Conventions
-- **Styling:** Tailwind CSS is likely used (verify in templates).
+- **Styling:** Tailwind CSS, built via CLI (not the CDN script). Theme lives in
+  `tailwind.config.js`, source in `app/static/css/input.css`, compiled output
+  (committed) is `app/static/css/tailwind.css`. After changing Tailwind classes
+  in templates or the theme config, run `npm run build:css` (or
+  `npm run watch:css` while developing) — the compiled CSS won't update itself.
+- **WebSocket CORS:** `SOCKETIO_CORS_ALLOWED_ORIGINS` (config.py) is driven by
+  the `CORS_ALLOWED_ORIGINS` env var, `*` by default for local dev. Production
+  deploys must set it to the real domain(s).
 - **Audit Logs:** All major actions should be logged using `AuditLog` model via `app/utils.py`.
 - **Notifications:** Bell/badge system integrated into `app/templates/base.html` and managed via `Notification` model.
