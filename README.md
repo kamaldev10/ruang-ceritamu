@@ -44,6 +44,15 @@ python run.py
 
 Buka **http://localhost:5000**
 
+> **CSS (Tailwind):** `app/static/css/tailwind.css` sudah di-commit jadi tidak
+> wajib build ulang untuk sekadar menjalankan app. Kalau mengubah class Tailwind
+> di template atau `tailwind.config.js`, build ulang dulu:
+> ```bash
+> npm install
+> npm run build:css      # sekali build (minified)
+> npm run watch:css      # atau live-rebuild selama development
+> ```
+
 ### 3. Production (opsional)
 
 ```bash

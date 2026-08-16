@@ -20,6 +20,14 @@ class Config:
     RATELIMIT_STORAGE_URI = "memory://"
     RATELIMIT_DEFAULT = "200/hour"
 
+    # Origin yang boleh buka koneksi WebSocket (Flask-SocketIO). "*" cocok untuk
+    # dev, tapi HARUS dipersempit ke domain asli di production (lihat
+    # ProductionConfig). Boleh berupa satu origin, atau beberapa dipisah koma.
+    _cors_env = os.environ.get("CORS_ALLOWED_ORIGINS", "*")
+    SOCKETIO_CORS_ALLOWED_ORIGINS = (
+        [o.strip() for o in _cors_env.split(",")] if "," in _cors_env else _cors_env
+    )
+
     # Mail Settings
     MAIL_SERVER = os.environ.get("MAIL_SERVER")
     MAIL_PORT = int(os.environ.get("MAIL_PORT") or 587)

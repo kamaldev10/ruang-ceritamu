@@ -21,7 +21,8 @@ def create_app(config_name=None):
     limiter.init_app(app)
     mail.init_app(app)
     async_mode = "threading" if app.config.get("TESTING") else "gevent"
-    socketio.init_app(app, async_mode=async_mode, cors_allowed_origins="*")
+    socketio.init_app(app, async_mode=async_mode,
+                       cors_allowed_origins=app.config["SOCKETIO_CORS_ALLOWED_ORIGINS"])
 
     _setup_logging(app)
 
