@@ -58,79 +58,79 @@
       
       <nav class="flex-1 px-4 py-6 overflow-y-auto">
         {% if current_user.is_admin %}
-          <div class="sidebar-section">Overview</div>
+          <div class="sidebar-section">Ringkasan</div>
           <a href="{{ url_for('admin.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.dashboard' }}">
             <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
           </a>
-          
-          <div class="sidebar-section">Management</div>
+
+          <div class="sidebar-section">Manajemen</div>
           <a href="{{ url_for('admin.users') }}" class="sidebar-link {{ 'active' if 'admin.users' in request.endpoint or 'admin.new_psikolog' in request.endpoint or 'admin.verify' in request.endpoint }}">
-            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Users
+            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Pengguna
           </a>
           <a href="{{ url_for('admin.sessions') }}" class="sidebar-link {{ 'active' if 'admin.session' in request.endpoint }}">
-            <span class="material-symbols-outlined text-[20px]">forum</span>Chat Sessions
+            <span class="material-symbols-outlined text-[20px]">forum</span>Sesi Chat
           </a>
           <a href="{{ url_for('admin.forum_mod') }}" class="sidebar-link {{ 'active' if 'admin.forum' in request.endpoint }}">
-            <span class="material-symbols-outlined text-[20px]">gavel</span>Moderation
+            <span class="material-symbols-outlined text-[20px]">gavel</span>Moderasi
           </a>
           <a href="{{ url_for('admin.reports') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.reports' }}">
-            <span class="material-symbols-outlined text-[20px]">flag</span>Reports
-          </a>
-          
-          <div class="sidebar-section">Content</div>
-          <a href="{{ url_for('admin.marquee') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.marquee' }}">
-            <span class="material-symbols-outlined text-[20px]">directions_run</span>Marquee Landing
+            <span class="material-symbols-outlined text-[20px]">flag</span>Laporan
           </a>
 
-          <div class="sidebar-section">System</div>
+          <div class="sidebar-section">Konten</div>
+          <a href="{{ url_for('admin.marquee') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.marquee' }}">
+            <span class="material-symbols-outlined text-[20px]">directions_run</span>Marquee Beranda
+          </a>
+
+          <div class="sidebar-section">Sistem</div>
           <a href="{{ url_for('admin.logs') }}" class="sidebar-link {{ 'active' if request.endpoint == 'admin.logs' }}">
-            <span class="material-symbols-outlined text-[20px]">manage_search</span>Audit Log
+            <span class="material-symbols-outlined text-[20px]">manage_search</span>Log Audit
           </a>
 
         {% elif current_user.is_psikolog %}
-          <div class="sidebar-section">Counselor Space</div>
+          <div class="sidebar-section">Ruang Pembimbing</div>
           <a href="{{ url_for('psikolog.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.dashboard' }}">
             <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
           </a>
           <a href="{{ url_for('psikolog.profile') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.profile' }}">
-            <span class="material-symbols-outlined text-[20px]">badge</span>Profile
+            <span class="material-symbols-outlined text-[20px]">badge</span>Profil
           </a>
           <a href="{{ url_for('psikolog.settings') }}" class="sidebar-link {{ 'active' if request.endpoint == 'psikolog.settings' }}">
-            <span class="material-symbols-outlined text-[20px]">settings</span>Settings
+            <span class="material-symbols-outlined text-[20px]">settings</span>Pengaturan
           </a>
-          <div class="sidebar-section">Community</div>
+          <div class="sidebar-section">Komunitas</div>
           <a href="{{ url_for('forum.feed') }}" class="sidebar-link {{ 'active' if 'forum' in request.endpoint }}">
             <span class="material-symbols-outlined text-[20px]">public</span>Forum
           </a>
-          
+
         {% else %}
           <div class="sidebar-section">Menu</div>
           <a href="{{ url_for('user.dashboard') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.dashboard' }}">
             <span class="material-symbols-outlined text-[20px]">grid_view</span>Dashboard
           </a>
           <a href="{{ url_for('chat.pilih') }}" class="sidebar-link {{ 'active' if 'chat' in request.endpoint }}">
-            <span class="material-symbols-outlined text-[20px]">chat_bubble</span>Start Session
+            <span class="material-symbols-outlined text-[20px]">chat_bubble</span>Mulai Sesi
           </a>
           <a href="{{ url_for('mood.tracker') }}" class="sidebar-link {{ 'active' if 'mood' in request.endpoint }}">
-            <span class="material-symbols-outlined text-[20px]">mood</span>Mood Tracker
+            <span class="material-symbols-outlined text-[20px]">mood</span>Lacak Mood
           </a>
-          <div class="sidebar-section">Community</div>
+          <div class="sidebar-section">Komunitas</div>
           <a href="{{ url_for('forum.feed') }}" class="sidebar-link {{ 'active' if 'forum' in request.endpoint }}">
             <span class="material-symbols-outlined text-[20px]">public</span>Forum
           </a>
-          <div class="sidebar-section">Account</div>
+          <div class="sidebar-section">Akun</div>
           <a href="{{ url_for('user.settings') }}" class="sidebar-link {{ 'active' if request.endpoint == 'user.settings' }}">
-            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Settings
+            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>Pengaturan
           </a>
         {% endif %}
       </nav>
-      
+
       <div class="px-4 py-4 border-t border-white/5 space-y-1 bg-black/10">
         <a href="{{ url_for('main.emergency') }}" class="sidebar-link hover:bg-red-500/20 text-red-300 hover:text-red-200">
-          <span class="material-symbols-outlined text-[20px]">emergency</span>Emergency
+          <span class="material-symbols-outlined text-[20px]">emergency</span>Darurat
         </a>
         <a href="{{ url_for('auth.logout') }}" class="sidebar-link hover:bg-white/10 text-slate-400">
-          <span class="material-symbols-outlined text-[20px]">logout</span>Sign Out
+          <span class="material-symbols-outlined text-[20px]">logout</span>Keluar
         </a>
       </div>
     </aside>

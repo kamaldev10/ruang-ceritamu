@@ -1,23 +1,23 @@
 {% extends "base_dashboard.html" %}
-{% block page_title %}My Profile{% endblock %}
-{% block page_subtitle %}Manage your professional details and track your impact{% endblock %}
+{% block page_title %}Profil Saya{% endblock %}
+{% block page_subtitle %}Kelola detail profesional dan pantau dampak yang kamu berikan{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto">
-  
+
   <!-- Profile Header Card -->
   <div class="bg-brand-900 text-white rounded-3xl p-8 sm:p-10 mb-8 flex flex-col sm:flex-row items-center sm:items-start gap-6 sm:gap-8 shadow-lg relative overflow-hidden">
     <!-- Decorative element -->
     <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20 blur-3xl pointer-events-none"></div>
-    
+
     <div class="w-28 h-28 bg-white/10 rounded-3xl flex items-center justify-center shrink-0 shadow-inner backdrop-blur-md border border-white/20 relative z-10">
       <span class="material-symbols-outlined text-white text-[48px]">support_agent</span>
     </div>
-    
+
     <div class="text-center sm:text-left relative z-10 pt-2">
       <div class="inline-flex items-center gap-1.5 bg-brand-800 border border-brand-700 px-3 py-1 rounded-full text-[10px] font-bold tracking-widest text-brand-100 mb-3 shadow-inner">
         <span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>
-        CERTIFIED COUNSELOR
+        PEMBIMBING TERSERTIFIKASI
       </div>
       <h1 class="font-heading text-3xl font-extrabold mb-1 tracking-tight">{{ current_user.full_name or current_user.username }}</h1>
       <p class="text-brand-200 font-mono text-sm opacity-90">@{{ current_user.username }}</p>
@@ -32,16 +32,16 @@
       </div>
       <div>
         <div class="font-heading text-5xl font-bold text-slate-800 tracking-tight">{{ total_done }}</div>
-        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">Total Sessions Completed</div>
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mt-1">Total Sesi Selesai</div>
       </div>
     </div>
-    
+
     <!-- Appreciation Card -->
     <div class="bg-brand-50 border border-brand-100 rounded-2xl p-6 sm:p-8 shadow-inner text-center flex flex-col justify-center relative overflow-hidden group">
       <div class="absolute inset-0 bg-brand-100 opacity-0 group-hover:opacity-50 transition-opacity"></div>
       <div class="text-5xl mb-3 relative z-10 transform group-hover:scale-110 transition-transform">💚</div>
-      <div class="text-brand-900 font-extrabold text-lg relative z-10">Thank you for your service!</div>
-      <div class="text-brand-700 text-sm mt-1 relative z-10">You're making a real difference.</div>
+      <div class="text-brand-900 font-extrabold text-lg relative z-10">Terima kasih atas pengabdianmu!</div>
+      <div class="text-brand-700 text-sm mt-1 relative z-10">Kamu benar-benar membuat perbedaan.</div>
     </div>
   </div>
 
@@ -51,7 +51,7 @@
     <div class="bg-white border border-slate-100 rounded-2xl p-6 sm:p-8 shadow-soft flex flex-col h-full">
       <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-slate-400">description</span>
-        Professional Bio
+        Bio Profesional
       </h3>
       <div class="bg-slate-50 border border-slate-100 rounded-xl p-5 flex-1">
         <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">{{ current_user.bio }}</p>
@@ -63,26 +63,26 @@
     <div class="bg-white border border-slate-100 rounded-2xl p-6 sm:p-8 shadow-soft flex flex-col h-full {{ 'md:col-span-2' if not current_user.bio else '' }}">
       <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2 mb-4">
         <span class="material-symbols-outlined text-slate-400">admin_panel_settings</span>
-        Account Details
+        Detail Akun
       </h3>
-      
+
       <div class="bg-slate-50 border border-slate-100 rounded-xl p-1 flex-1">
         <div class="flex items-center justify-between p-4 border-b border-slate-100 last:border-0">
           <div class="flex items-center gap-3 text-slate-500 text-sm font-medium">
-            <span class="material-symbols-outlined text-[18px]">mail</span> Email Address
+            <span class="material-symbols-outlined text-[18px]">mail</span> Alamat Email
           </div>
           <span class="text-slate-800 font-bold text-sm bg-white px-3 py-1 rounded shadow-sm">{{ current_user.email }}</span>
         </div>
-        
+
         <div class="flex items-center justify-between p-4 border-b border-slate-100 last:border-0">
           <div class="flex items-center gap-3 text-slate-500 text-sm font-medium">
-            <span class="material-symbols-outlined text-[18px]">calendar_month</span> Joined Date
+            <span class="material-symbols-outlined text-[18px]">calendar_month</span> Tanggal Bergabung
           </div>
           <span class="text-slate-800 font-bold text-sm bg-white px-3 py-1 rounded shadow-sm">{{ current_user.created_at.strftime('%d %B %Y') }}</span>
         </div>
       </div>
     </div>
   </div>
-  
+
 </div>
 {% endblock %}

@@ -1,10 +1,10 @@
 {% extends "base_dashboard.html" %}
-{% block page_title %}Account Settings{% endblock %}
-{% block page_subtitle %}Manage your profile, security, and privacy{% endblock %}
+{% block page_title %}Pengaturan Akun{% endblock %}
+{% block page_subtitle %}Kelola profil, keamanan, dan privasi Anda{% endblock %}
 
 {% block content %}
 <div class="max-w-3xl mx-auto space-y-8">
-  
+
   <!-- Profile Settings -->
   <div class="bg-white border border-slate-100 rounded-3xl p-8 sm:p-10 shadow-soft">
     <div class="flex items-center gap-3 mb-8 border-b border-slate-100 pb-6">
@@ -12,15 +12,15 @@
         <span class="material-symbols-outlined text-[20px]">person</span>
       </div>
       <div>
-        <h3 class="font-heading text-xl font-bold text-slate-800">Edit Profile</h3>
-        <p class="text-xs text-slate-500 font-medium mt-0.5">Personalize how others see you in the community.</p>
+        <h3 class="font-heading text-xl font-bold text-slate-800">Edit Profil</h3>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Sesuaikan bagaimana orang lain melihatmu di komunitas.</p>
       </div>
     </div>
-    
+
     <form method="POST" enctype="multipart/form-data" class="space-y-6">
       {{ profile_form.hidden_tag() }}
       <input type="hidden" name="action" value="profile">
-      
+
       <!-- Avatar Upload -->
       <div class="flex items-center gap-6 mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-100">
         <div class="relative group">
@@ -35,14 +35,14 @@
             <span class="material-symbols-outlined text-white">photo_camera</span>
           </div>
         </div>
-        
+
         <div class="flex-1">
-          <label class="block font-semibold text-slate-700 text-sm mb-2">Profile Picture</label>
+          <label class="block font-semibold text-slate-700 text-sm mb-2">Foto Profil</label>
           {{ profile_form.avatar(class_="block w-full text-sm text-slate-500 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100 transition-all cursor-pointer") }}
-          <p class="text-[11px] text-slate-400 font-medium mt-2">JPG or PNG, max 2MB</p>
+          <p class="text-[11px] text-slate-400 font-medium mt-2">JPG atau PNG, maks 2MB</p>
         </div>
       </div>
-      
+
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Username -->
         <div class="space-y-1.5">
@@ -52,29 +52,29 @@
             <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
           {% endfor %}
         </div>
-        
+
         <!-- Email -->
         <div class="space-y-1.5">
-          <label class="block font-semibold text-slate-700 text-sm">Email Address</label>
+          <label class="block font-semibold text-slate-700 text-sm">Alamat Email</label>
           {{ profile_form.email(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all") }}
           {% for e in profile_form.email.errors %}
             <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
           {% endfor %}
         </div>
       </div>
-      
+
       <!-- Full Name -->
       <div class="space-y-1.5">
-        <label class="block font-semibold text-slate-700 text-sm">Full Name <span class="text-slate-400 font-normal">(optional)</span></label>
-        {{ profile_form.full_name(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="Your full name") }}
+        <label class="block font-semibold text-slate-700 text-sm">Nama Lengkap <span class="text-slate-400 font-normal">(opsional)</span></label>
+        {{ profile_form.full_name(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="Nama lengkap Anda") }}
       </div>
-      
+
       <!-- Bio -->
       <div class="space-y-1.5">
         <label class="block font-semibold text-slate-700 text-sm">Bio</label>
-        {{ profile_form.bio(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all min-h-[100px] resize-none", placeholder="Tell us a little about yourself...") }}
+        {{ profile_form.bio(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all min-h-[100px] resize-none", placeholder="Ceritakan sedikit tentang dirimu...") }}
       </div>
-      
+
       <div class="pt-4 flex justify-end">
         {{ profile_form.submit(class_="px-8 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer") }}
       </div>
@@ -88,41 +88,41 @@
         <span class="material-symbols-outlined text-[20px]">lock</span>
       </div>
       <div>
-        <h3 class="font-heading text-xl font-bold text-slate-800">Security</h3>
-        <p class="text-xs text-slate-500 font-medium mt-0.5">Update your password to keep your account secure.</p>
+        <h3 class="font-heading text-xl font-bold text-slate-800">Keamanan</h3>
+        <p class="text-xs text-slate-500 font-medium mt-0.5">Perbarui kata sandi untuk menjaga keamanan akun.</p>
       </div>
     </div>
-    
+
     <form method="POST" class="space-y-6 max-w-xl">
       {{ password_form.hidden_tag() }}
       <input type="hidden" name="action" value="password">
-      
+
       <div class="space-y-1.5">
-        <label class="block font-semibold text-slate-700 text-sm">Current Password</label>
+        <label class="block font-semibold text-slate-700 text-sm">Kata Sandi Saat Ini</label>
         {{ password_form.current_password(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="••••••••") }}
         {% for e in password_form.current_password.errors %}
           <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
         {% endfor %}
       </div>
-      
+
       <div class="pt-4 border-t border-slate-100 space-y-6">
         <div class="space-y-1.5">
-          <label class="block font-semibold text-slate-700 text-sm">New Password</label>
-          {{ password_form.new_password(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="Min 8 characters, 1 uppercase, 1 digit") }}
+          <label class="block font-semibold text-slate-700 text-sm">Kata Sandi Baru</label>
+          {{ password_form.new_password(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="Min 8 karakter, 1 huruf besar, 1 angka") }}
           {% for e in password_form.new_password.errors %}
             <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
           {% endfor %}
         </div>
-        
+
         <div class="space-y-1.5">
-          <label class="block font-semibold text-slate-700 text-sm">Confirm New Password</label>
+          <label class="block font-semibold text-slate-700 text-sm">Konfirmasi Kata Sandi Baru</label>
           {{ password_form.confirm_password(class_="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all", placeholder="••••••••") }}
           {% for e in password_form.confirm_password.errors %}
             <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
           {% endfor %}
         </div>
       </div>
-      
+
       <div class="pt-4">
         {{ password_form.submit(class_="px-8 py-3.5 rounded-xl bg-brand-900 hover:bg-brand-800 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer") }}
       </div>
@@ -132,46 +132,46 @@
   <!-- Danger Zone -->
   <div class="bg-white border-2 border-red-100 rounded-3xl p-8 sm:p-10 relative overflow-hidden">
     <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 to-red-300"></div>
-    
+
     <div class="flex items-center gap-3 mb-6">
       <div class="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center">
         <span class="material-symbols-outlined text-[20px]">delete_forever</span>
       </div>
       <div>
-        <h3 class="font-heading text-xl font-bold text-red-900">Danger Zone</h3>
-        <p class="text-xs text-red-600/70 font-medium mt-0.5">Irreversible actions that affect your account permanently.</p>
+        <h3 class="font-heading text-xl font-bold text-red-900">Zona Berbahaya</h3>
+        <p class="text-xs text-red-600/70 font-medium mt-0.5">Tindakan permanen yang tidak bisa dibatalkan.</p>
       </div>
     </div>
-    
+
     <div class="bg-red-50/50 border border-red-100 rounded-2xl p-5 mb-5">
       <p class="text-sm text-red-800 leading-relaxed">
-        This action will <strong>permanently deactivate</strong> your account and anonymize all your personal data. 
-        This <strong>cannot be undone</strong>.
+        Tindakan ini akan <strong>menonaktifkan akun Anda secara permanen</strong> dan menganonimkan semua data pribadi Anda.
+        Tindakan ini <strong>tidak bisa dibatalkan</strong>.
       </p>
     </div>
-    
+
     <details class="group">
       <summary class="cursor-pointer text-red-600 font-bold text-sm py-2 flex items-center gap-2 hover:text-red-700 transition-colors select-none">
         <span class="material-symbols-outlined text-[16px] group-open:rotate-90 transition-transform">chevron_right</span>
-        I understand, show the delete form...
+        Saya mengerti, tampilkan formulir hapus...
       </summary>
-      
+
       <form method="POST" class="mt-6 space-y-5 max-w-md">
         {{ delete_form.hidden_tag() }}
         <input type="hidden" name="action" value="delete">
-        
+
         <div class="space-y-1.5">
-          <label class="block font-semibold text-red-700 text-sm">Type "HAPUS" to confirm</label>
+          <label class="block font-semibold text-red-700 text-sm">Ketik "HAPUS" untuk konfirmasi</label>
           {{ delete_form.confirm_text(class_="w-full px-4 py-3 rounded-xl border-2 border-red-200 bg-red-50/30 focus:bg-white text-sm text-red-800 outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all", placeholder="HAPUS") }}
           {% for e in delete_form.confirm_text.errors %}
             <p class="text-red-500 text-xs font-medium flex items-center gap-1 mt-1"><span class="material-symbols-outlined text-[14px]">error</span>{{ e }}</p>
           {% endfor %}
         </div>
-        
+
         {{ delete_form.submit(class_="px-8 py-3.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition-all shadow-md hover:shadow-lg cursor-pointer") }}
       </form>
     </details>
   </div>
-  
+
 </div>
 {% endblock %}

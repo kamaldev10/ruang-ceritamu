@@ -1,12 +1,12 @@
 {% extends "base_dashboard.html" %}
 {% block page_title %}Dashboard{% endblock %}
-{% block page_subtitle %}Welcome back, {{ current_user.username }} 👋{% endblock %}
+{% block page_subtitle %}Selamat datang kembali, {{ current_user.username }} 👋{% endblock %}
 
 {% block content %}
 <!-- Metrics Grid -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
   <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-soft flex flex-col justify-between">
-    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Counselors Online</div>
+    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Pembimbing Online</div>
     <div class="flex items-end justify-between">
       <div class="font-heading text-4xl font-bold text-slate-800">{{ psikolog_online }}</div>
       <div class="w-10 h-10 bg-green-50 text-green-600 rounded-xl flex items-center justify-center">
@@ -14,9 +14,9 @@
       </div>
     </div>
   </div>
-  
+
   <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-soft flex flex-col justify-between">
-    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Mood Entries This Week</div>
+    <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Catatan Mood Minggu Ini</div>
     <div class="flex items-end justify-between">
       <div class="font-heading text-4xl font-bold text-slate-800">{{ moods_week|length }}</div>
       <div class="w-10 h-10 bg-violet-50 text-violet-600 rounded-xl flex items-center justify-center">
@@ -24,12 +24,12 @@
       </div>
     </div>
   </div>
-  
+
   <div class="bg-brand-900 text-white rounded-2xl p-6 shadow-md relative overflow-hidden flex flex-col justify-between">
     <div class="absolute top-0 right-0 -mr-4 -mt-4 w-24 h-24 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-    <div class="text-[11px] font-bold uppercase tracking-wider text-brand-100 mb-2">Always Free</div>
+    <div class="text-[11px] font-bold uppercase tracking-wider text-brand-100 mb-2">Selalu Gratis</div>
     <div class="flex items-end justify-between">
-      <div class="font-heading text-xl font-extrabold">Unlimited sessions, zero cost.</div>
+      <div class="font-heading text-xl font-extrabold">Sesi tanpa batas, tanpa biaya.</div>
       <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
         <span class="material-symbols-outlined text-[20px]">favorite</span>
       </div>
@@ -38,19 +38,19 @@
 </div>
 
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-  
+
   <!-- Recent Sessions -->
   <div class="bg-white border border-slate-100 rounded-2xl shadow-soft overflow-hidden flex flex-col">
     <div class="p-5 border-b border-slate-50 flex items-center justify-between">
       <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2">
         <span class="material-symbols-outlined text-slate-400">forum</span>
-        Your Sessions
+        Sesi Kamu
       </h3>
       <a href="{{ url_for('chat.pilih') }}" class="inline-flex items-center gap-1 text-sm font-bold text-brand-600 hover:text-brand-800 transition-colors bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-lg border border-brand-100">
-        <span class="material-symbols-outlined text-[16px]">add</span> New
+        <span class="material-symbols-outlined text-[16px]">add</span> Baru
       </a>
     </div>
-    
+
     <div class="p-5 flex-1 overflow-y-auto max-h-[400px]">
       <div class="space-y-3">
         {% if recent_sessions %}
@@ -63,12 +63,12 @@
                   {% if s.status == 'active' %}bg-brand-100 text-brand-700 border border-brand-200
                   {% elif s.status == 'waiting' %}bg-yellow-100 text-yellow-700 border border-yellow-200
                   {% else %}bg-slate-100 text-slate-500 border border-slate-200{% endif %}">
-                  {{ s.status }}
+                  {{ 'Aktif' if s.status == 'active' else ('Menunggu' if s.status == 'waiting' else 'Selesai') }}
                 </span>
               </div>
               <div class="text-xs font-medium text-slate-500 flex items-center gap-1.5">
                 <span class="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
-                {{ s.topic or 'General Counseling' }}
+                {{ s.topic or 'Konseling Umum' }}
               </div>
             </div>
             {% if s.status != 'ended' %}
@@ -83,9 +83,9 @@
           <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-slate-300 mb-3 shadow-sm border border-slate-100">
             <span class="material-symbols-outlined text-3xl">chat_bubble_outline</span>
           </div>
-          <p class="text-slate-500 font-semibold text-sm mb-2">No sessions yet</p>
+          <p class="text-slate-500 font-semibold text-sm mb-2">Belum ada sesi</p>
           <a href="{{ url_for('chat.pilih') }}" class="text-brand-600 font-bold text-sm hover:text-brand-800 transition-colors inline-flex items-center gap-1">
-            <span class="material-symbols-outlined text-[16px]">add_circle</span> Start your first session
+            <span class="material-symbols-outlined text-[16px]">add_circle</span> Mulai sesi pertamamu
           </a>
         </div>
         {% endif %}
@@ -98,13 +98,13 @@
     <div class="p-5 border-b border-slate-50 flex items-center justify-between">
       <h3 class="font-heading font-bold text-slate-800 flex items-center gap-2">
         <span class="material-symbols-outlined text-slate-400">groups</span>
-        Community Stories
+        Cerita Komunitas
       </h3>
       <a href="{{ url_for('forum.feed') }}" class="text-sm font-bold text-slate-500 hover:text-brand-600 transition-colors">
-        View All
+        Lihat Semua
       </a>
     </div>
-    
+
     <div class="p-5 flex-1 overflow-y-auto max-h-[400px]">
       <div class="space-y-3">
         {% for p in recent_posts %}
@@ -117,13 +117,13 @@
           <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-3">
             <span class="material-symbols-outlined text-3xl">article</span>
           </div>
-          <p class="text-slate-500 font-semibold text-sm">No stories yet</p>
+          <p class="text-slate-500 font-semibold text-sm">Belum ada cerita</p>
         </div>
         {% endfor %}
       </div>
     </div>
   </div>
-  
+
 </div>
 
 <!-- Safety Notice -->
@@ -133,8 +133,8 @@
     <span class="material-symbols-outlined text-[20px]">info</span>
   </div>
   <div class="text-amber-900 leading-relaxed pt-0.5">
-    <strong class="block text-amber-950 mb-1 text-base">Important Notice</strong>
-    CeritaKita is not a professional therapy service. For serious crisis situations, please contact the <a href="{{ url_for('main.emergency') }}" class="underline font-bold hover:text-amber-700 transition-colors">emergency hotline</a>.
+    <strong class="block text-amber-950 mb-1 text-base">Penting Diperhatikan</strong>
+    CeritaKita bukan layanan terapi profesional. Untuk situasi krisis serius, silakan hubungi <a href="{{ url_for('main.emergency') }}" class="underline font-bold hover:text-amber-700 transition-colors">hotline darurat</a>.
   </div>
 </div>
 {% endblock %}

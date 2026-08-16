@@ -1,30 +1,30 @@
 {% extends "base_dashboard.html" %}
-{% block page_title %}Forum Moderation{% endblock %}
-{% block page_subtitle %}Manage community posts and visibility{% endblock %}
+{% block page_title %}Moderasi Forum{% endblock %}
+{% block page_subtitle %}Kelola postingan komunitas dan visibilitasnya{% endblock %}
 
 {% block content %}
 <!-- Top Actions Bar -->
 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl shadow-soft border border-slate-100">
-  
+
   <!-- Filters -->
   <div class="flex flex-wrap items-center gap-2">
-    <a href="{{ url_for('admin.forum_mod') }}" 
+    <a href="{{ url_for('admin.forum_mod') }}"
        class="px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-1.5
        {{ 'bg-brand-900 text-white shadow-md' if not show_hidden else 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800' }}">
-      <span class="material-symbols-outlined text-[16px]">{{ 'public' if not show_hidden else 'public_off' }}</span> Public
+      <span class="material-symbols-outlined text-[16px]">{{ 'public' if not show_hidden else 'public_off' }}</span> Publik
     </a>
-    
-    <a href="{{ url_for('admin.forum_mod', hidden=1) }}" 
+
+    <a href="{{ url_for('admin.forum_mod', hidden=1) }}"
        class="px-5 py-1.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-1.5
        {{ 'bg-slate-800 text-white shadow-md' if show_hidden else 'bg-slate-50 border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-800' }}">
-      <span class="material-symbols-outlined text-[16px]">{{ 'visibility_off' if show_hidden else 'visibility' }}</span> Hidden
+      <span class="material-symbols-outlined text-[16px]">{{ 'visibility_off' if show_hidden else 'visibility' }}</span> Disembunyikan
     </a>
   </div>
 
   <!-- Search -->
   <form class="flex-1 md:w-80 relative flex items-center max-w-sm">
     <span class="material-symbols-outlined absolute left-3 text-slate-400 text-[20px]">search</span>
-    <input type="text" name="q" value="{{ search }}" placeholder="Search by title..." 
+    <input type="text" name="q" value="{{ search }}" placeholder="Cari berdasarkan judul..."
            class="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:bg-white focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-all">
   </form>
 </div>
@@ -36,12 +36,12 @@
       <thead>
         <tr>
           <th class="px-6 py-4 text-left w-16">ID</th>
-          <th class="px-6 py-4 text-left">Post Title</th>
+          <th class="px-6 py-4 text-left">Judul Postingan</th>
           <th class="px-6 py-4 text-center">Tag</th>
-          <th class="px-6 py-4 text-center">Likes</th>
-          <th class="px-6 py-4 text-left">Created</th>
+          <th class="px-6 py-4 text-center">Suka</th>
+          <th class="px-6 py-4 text-left">Dibuat</th>
           <th class="px-6 py-4 text-center">Status</th>
-          <th class="px-6 py-4 text-right">Actions</th>
+          <th class="px-6 py-4 text-right">Aksi</th>
         </tr>
       </thead>
       <tbody class="divide-y divide-slate-50">
@@ -50,15 +50,15 @@
           <td class="px-6 py-4">
             <span class="font-mono font-bold text-slate-400 text-xs">#{{ p.id }}</span>
           </td>
-          
+
           <td class="px-6 py-4">
-            <a href="{{ url_for('forum.detail', post_id=p.id) }}" target="_blank" 
+            <a href="{{ url_for('forum.detail', post_id=p.id) }}" target="_blank"
                class="font-semibold text-brand-700 hover:text-brand-900 transition-colors line-clamp-1 inline-flex items-center gap-1 group-hover:underline">
               {{ p.title }}
               <span class="material-symbols-outlined text-[12px] opacity-0 group-hover:opacity-100 transition-opacity">open_in_new</span>
             </a>
           </td>
-          
+
           <td class="px-6 py-4 text-center">
             {% if p.mood_tag %}
               <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-brand-50 text-brand-700 border border-brand-100">
@@ -68,36 +68,36 @@
               <span class="text-slate-300">-</span>
             {% endif %}
           </td>
-          
+
           <td class="px-6 py-4 text-center">
             <div class="inline-flex items-center gap-1 text-slate-500 font-medium bg-slate-50 px-2 py-1 rounded-lg border border-slate-100">
               <span class="material-symbols-outlined text-[14px] text-red-500">favorite</span> {{ p.likes_count or 0 }}
             </div>
           </td>
-          
+
           <td class="px-6 py-4 text-slate-500 text-xs font-medium">{{ time_ago(p.created_at) }}</td>
-          
+
           <td class="px-6 py-4 text-center">
             {% if p.is_hidden %}
               <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
-                <span class="material-symbols-outlined text-[14px]">visibility_off</span> Hidden
+                <span class="material-symbols-outlined text-[14px]">visibility_off</span> Disembunyikan
               </span>
             {% else %}
               <span class="inline-flex items-center gap-1 text-xs font-bold text-green-700 bg-green-50 px-2.5 py-1 rounded-lg border border-green-200">
-                <span class="material-symbols-outlined text-[14px]">public</span> Public
+                <span class="material-symbols-outlined text-[14px]">public</span> Publik
               </span>
             {% endif %}
           </td>
-          
+
           <td class="px-6 py-4 text-right">
             <form method="POST" action="{{ url_for('admin.toggle_post', post_id=p.id) }}" class="inline-block">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" 
-                      title="{{ 'Make Public' if p.is_hidden else 'Hide Post' }}"
+              <button type="submit"
+                      title="{{ 'Jadikan Publik' if p.is_hidden else 'Sembunyikan Postingan' }}"
                       class="px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm
                       {{ 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50' if p.is_hidden else 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100' }}">
                 <span class="material-symbols-outlined text-[16px]">{{ 'visibility' if p.is_hidden else 'visibility_off' }}</span>
-                {{ 'Show' if p.is_hidden else 'Hide' }}
+                {{ 'Tampilkan' if p.is_hidden else 'Sembunyikan' }}
               </button>
             </form>
           </td>
@@ -109,8 +109,8 @@
               <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center text-slate-300 mb-4">
                 <span class="material-symbols-outlined text-3xl">article</span>
               </div>
-              <p class="text-slate-600 font-semibold mb-1">No posts found</p>
-              <p class="text-slate-400 text-sm">There are no posts matching your current filters.</p>
+              <p class="text-slate-600 font-semibold mb-1">Tidak ada postingan ditemukan</p>
+              <p class="text-slate-400 text-sm">Tidak ada postingan yang cocok dengan filter saat ini.</p>
             </div>
           </td>
         </tr>
