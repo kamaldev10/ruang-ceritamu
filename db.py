@@ -101,6 +101,19 @@ def ensure_database_exists() -> None:
 
     # 2. Jika belum ada (mis. dev lokal/Laragon), coba buat database otomatis
     try:
+        connect_kwargs = {
+            'host': DB_CONFIG['host'],
+            'user': DB_CONFIG['user'],
+            'password': DB_CONFIG['password'],
+            'port': DB_CONFIG['port'],
+            'charset': 'utf8mb4',
+        }
+        if DB_CONFIG.get('ssl'):
+            if DB_CONFIG.get('ssl_ca'):
+                connect_kwargs['ssl'] = {'ca': DB_CONFIG['ssl_ca']}
+            else:
+                connect_kwargs['ssl'] = {'ssl_mode': 'REQUIRED'}
+
         conn = pymysql.connect(**connect_kwargs)
         try:
             with conn.cursor() as cur:
@@ -113,6 +126,12 @@ def ensure_database_exists() -> None:
             conn.close()
         print(f"✅ Database '{DB_CONFIG['database']}' berhasil dibuat/disiapkan.")
     except pymysql.MySQLError as e:
-        print(f"⚠️  Catatan database: {e}")
-        print(f"   Jika menggunakan Cloud Database (seperti TiDB Cloud), pastikan database '{DB_CONFIG['database']}' sudah dibuat di console/dashboard provider Anda (atau gunakan database default 'test').")
-
+        print()
+        print("❌ Gagal terhubung ke MySQL.")
+        print(f"   Error: {e}")
+        print()
+        print("   Periksa hal berikut:")
+        print(f"   1. Laragon / MySQL Server sudah jalan dan MySQL aktif di port {DB_CONFIG['port']}?")
+        print(f"   2. Kredensial di .env (DB_USER/DB_PASSWORD) sudah benar?")
+        print()
+        raise
