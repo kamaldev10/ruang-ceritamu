@@ -24,38 +24,73 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 load_dotenv(os.path.join(basedir, ".env"))
 
 
+def _find_ca_bundle():
+    custom_ca = os.environ.get("DB_SSL_CA")
+    if custom_ca and os.path.exists(custom_ca):
+        return custom_ca
+    standard_paths = [
+        "/etc/ssl/certs/ca-certificates.crt",  # Debian/Ubuntu/Render
+        "/etc/pki/tls/certs/ca-bundle.crt",     # Fedora/CentOS/RHEL
+        "/etc/ssl/ca-bundle.pem",               # OpenSUSE
+        "/etc/ssl/cert.pem",                   # Alpine/macOS
+    ]
+    for p in standard_paths:
+        if os.path.exists(p):
+            return p
+    return None
+
+
 DB_CONFIG = {
     'host': os.environ.get('DB_HOST', 'localhost'),
     'user': os.environ.get('DB_USER', 'root'),
     'password': os.environ.get('DB_PASSWORD', ''),
     'port': int(os.environ.get('DB_PORT', 3306)),
     'database': os.environ.get('DB_NAME', 'db_cerita'),
+    'ssl': (
+        os.environ.get('DB_SSL', '').lower() in ('1', 'true', 'yes')
+        or 'tidbcloud' in os.environ.get('DB_HOST', '').lower()
+        or bool(os.environ.get('DB_SSL_CA'))
+    ),
+    'ssl_ca': _find_ca_bundle(),
 }
 
 
 def get_database_uri() -> str:
     """Build SQLAlchemy connection URI dari DB_CONFIG."""
-    return (
+    uri = (
         f"mysql+pymysql://{DB_CONFIG['user']}:{quote_plus(DB_CONFIG['password'])}"
         f"@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}"
         f"?charset=utf8mb4"
     )
+    if DB_CONFIG.get('ssl'):
+        if DB_CONFIG.get('ssl_ca'):
+            uri += f"&ssl_ca={DB_CONFIG['ssl_ca']}"
+        else:
+            uri += "&ssl_verify_cert=true"
+    return uri
 
 
 def ensure_database_exists() -> None:
     """Bikin database kalau belum ada.
 
     Dipanggil sebelum app start supaya user tidak perlu manual CREATE DATABASE.
-    Memerlukan MySQL server (Laragon) sudah berjalan.
+    Memerlukan MySQL server (Laragon/Cloud) sudah berjalan.
     """
     try:
-        conn = pymysql.connect(
-            host=DB_CONFIG['host'],
-            user=DB_CONFIG['user'],
-            password=DB_CONFIG['password'],
-            port=DB_CONFIG['port'],
-            charset='utf8mb4',
-        )
+        connect_kwargs = {
+            'host': DB_CONFIG['host'],
+            'user': DB_CONFIG['user'],
+            'password': DB_CONFIG['password'],
+            'port': DB_CONFIG['port'],
+            'charset': 'utf8mb4',
+        }
+        if DB_CONFIG.get('ssl'):
+            if DB_CONFIG.get('ssl_ca'):
+                connect_kwargs['ssl'] = {'ca': DB_CONFIG['ssl_ca']}
+            else:
+                connect_kwargs['ssl'] = {'ssl_mode': 'REQUIRED'}
+
+        conn = pymysql.connect(**connect_kwargs)
         try:
             with conn.cursor() as cur:
                 cur.execute(
@@ -72,7 +107,7 @@ def ensure_database_exists() -> None:
         print(f"   Error: {e}")
         print()
         print("   Periksa hal berikut:")
-        print(f"   1. Laragon sudah jalan dan MySQL aktif di port {DB_CONFIG['port']}?")
+        print(f"   1. Laragon / MySQL Server sudah jalan dan MySQL aktif di port {DB_CONFIG['port']}?")
         print(f"   2. Kredensial di .env (DB_USER/DB_PASSWORD) sudah benar?")
         print()
         raise
